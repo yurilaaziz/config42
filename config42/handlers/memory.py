@@ -7,10 +7,3 @@ class Memory(ConfigHandlerBase):
             :rtype: dict
         """
         return self._config
-
-    def dump(self):
-        """
-            As it is stored in memory, returns True.
-            :rtype: bool (success)
-        """
-        return True

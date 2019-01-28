@@ -13,23 +13,20 @@ class ConfigManager:
     def get_default(self, key):
         return self.recursive(key, obj=self.defaults)
 
-    def recursive(self, key, obj=None, value=None):
+    def recursive(self, key, obj, value=None):
         _keys = key.split('.')
         assert len(_keys) > 0
-
-        if obj is None:
-            obj = self.handler._config
 
         if isinstance(obj, list):
             _base = int(_keys[0])
         else:
             _base = _keys[0]
 
-        if isinstance(obj,dict) and _base not in obj and not value:
+        if isinstance(obj, dict) and _base not in obj and not value:
             return None
-        if isinstance(obj,list) and _base >= len(obj) and not value:
+        if isinstance(obj, list) and _base >= len(obj) and not value:
             return None
-        elif obj is list and value:
+        elif isinstance(obj, list) and value:
             raise AttributeError("Insertion in list is not allowed")
 
         if len(_keys) == 1:
@@ -37,7 +34,7 @@ class ConfigManager:
                 obj[_base] = value
             return obj[_base]
         else:
-            if isinstance(obj,dict) and _base not in obj:
+            if isinstance(obj, dict) and _base not in obj:
                 obj[_base] = dict()
 
             return self.recursive('.'.join(_keys[1:]), obj[_base], value)
@@ -67,12 +64,12 @@ class ConfigManager:
         if self.recursive(key, obj=self.handler.as_dict()) == value:
             return False  # Not updating
 
-        status = self.recursive(key, obj=self.handler.as_dict(), value=value)
-
-        if status and trigger_commit:
+        self.recursive(key, obj=self.handler.as_dict(), value=value)
+        self.handler._updated = True
+        if trigger_commit:
             self.commit()
 
-        return status
+        return self.handler._updated
 
     def replace(self, config, trigger_commit=True):
         """

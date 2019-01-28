@@ -28,6 +28,8 @@ class ConfigHandlerBase:
             Serialize and store the configuration key, values to the data store.
             :rtype: bool (success)
         """
+        # Reset this flag to False, to respect the concept
+        self._updated = False
         return True
 
     def flush(self):
