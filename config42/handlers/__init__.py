@@ -6,11 +6,9 @@ LOGGER.addHandler(logging.NullHandler())
 
 class ConfigHandlerBase:
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         """
             Initialize the handler data store.
-            :param kwargs: generic params forwarded from the Configmanager
-            :type key: dict
         """
         self._config = {}
         self._updated = False
