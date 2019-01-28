@@ -1,6 +1,7 @@
 import pytest
 
 import config42
+from config42.handlers.files import FileHandler
 
 
 @pytest.fixture
@@ -14,8 +15,8 @@ def default_config():
 @pytest.fixture
 def config():
     return {
-        'simple': 'value',
-        'bool': True,
+        'simple':      'value',
+        'bool':        True,
         'simple_dict': {'key': 'value'},
         'nested_dict': {'key': 'value', 'nested': {'key': 'value'}},
         'nested_list': [[''], ['value']]
@@ -30,3 +31,11 @@ def test_default_handler():
 def test_default_handler_dump():
     memory_handler = config42.handlers.memory.Memory()
     assert memory_handler.dump()
+
+
+def test_file_handler_init_with_file_path():
+    with pytest.raises(TypeError):
+        config_manager = config42.ConfigManager(handler=FileHandler)
+    config_manager = config42.ConfigManager(handler=FileHandler, file_path="path")
+
+
