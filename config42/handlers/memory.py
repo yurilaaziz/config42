@@ -1,5 +1,6 @@
 from . import ConfigHandlerBase
 
+
 class Memory(ConfigHandlerBase):
     def load(self):
         """

@@ -14,7 +14,6 @@ class ConfigHandlerBase:
         """
         self._config = {}
         self._updated = False
-        pass
 
     def load(self):
         """
@@ -39,7 +38,6 @@ class ConfigHandlerBase:
         """
         self._config = {}
         return True
-
 
     def as_dict(self):
         """

@@ -7,7 +7,7 @@ import config42
 def default_config():
     return {
         'defaultkey1': 'simple',
-        'defaultkey2':{'defaultkey2': 'simple'}
+        'defaultkey2': {'defaultkey2': 'simple'}
     }
 
 
@@ -20,8 +20,6 @@ def config():
         'nested_dict': {'key': 'value', 'nested': {'key': 'value'}},
         'nested_list': [[''], ['value']]
     }
-
-
 
 
 def test_configuration_content(config):
@@ -48,8 +46,6 @@ def test_configuration_setting(config):
     assert_configuration_content(config_manager, config)
 
 
-
-
 def test_configuration_setting_nested_keys(config):
     config_manager = config42.ConfigManager()
     config_manager.set_many(config)
@@ -68,12 +64,11 @@ def test_configuration_setting_raise_exception(config):
     with pytest.raises(AttributeError):
         config_manager.set('nested_list.0.1', 'simple')
 
+
 def test_configuration_content_index_error(config):
     config_manager = config42.ConfigManager()
     config_manager.set_many(config)
     assert config_manager.get('nested_list.0.4') is None
-
-
 
 
 def test_configuration_content_absent_keys():
@@ -91,14 +86,13 @@ def test_configuration_default_values(default_config):
     assert config_manager.get('absentkey3.absentkey3.absentkey3') is None
 
 
-
-def test_configuration_replace(default_config,config):
+def test_configuration_replace(default_config, config):
     config_manager = config42.ConfigManager()
 
     config_manager.set_many(config)
     assert config['simple'] == config_manager.get('simple')
     config_manager.replace(default_config)
-    assert  config_manager.get('simple') is None
+    assert config_manager.get('simple') is None
     assert default_config['defaultkey1'] == config_manager.get('defaultkey1')
 
 
@@ -109,13 +103,12 @@ def test_configuration_trigger_commit(config):
     config_manager.commit()
     assert config['simple'] == config_manager.get('simple')
 
-    config_manager.set('new_key','new_value')
+    config_manager.set('new_key', 'new_value')
     assert config_manager.handler._updated is False
     config_manager.set('new_key2', 'new_value2', trigger_commit=False)
     assert config_manager.handler._updated is True
     config_manager.commit()
     assert config_manager.handler._updated is False
 
-    config_manager.set('new_key','new_value',trigger_commit=True)
+    config_manager.set('new_key', 'new_value', trigger_commit=True)
     assert config_manager.handler._updated is False
-
