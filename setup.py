@@ -4,7 +4,7 @@ setup(
     name="config42",
     packages=find_packages(),
     version='0.1',
-    license='MIT',
+    license='GPLv3',
     description="Configuration manager for cloud native application, support configuration stored"
                 " in memory, in files, in databases",
     author="Amine Ben Asker",
