@@ -1,4 +1,8 @@
-import yaml
+try:
+    import yaml
+except ImportError:
+    raise ImportError("files.Yaml handler requires 'PyYAML' package."
+                      "Install it with 'pip install pyyaml'")
 
 from . import FileHandler
 
