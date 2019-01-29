@@ -7,10 +7,16 @@ def test_default_handler():
 
 
 def test_default_handler_dump():
-    memory_handler = config42.handlers.memory.Memory()
-    assert memory_handler.dump()
+    config_manager = config42.ConfigManager()
+    assert config_manager.handler.dump()
 
 
-def test_default_handler_dump():
-    memory_handler = config42.handlers.memory.Memory()
-    assert memory_handler.dump()
+def test_default_handler_destroy():
+    config_manager = config42.ConfigManager()
+    assert config_manager.handler.destroy()
+
+
+def test_default_handler_flush():
+    config_manager = config42.ConfigManager()
+    assert config_manager.handler.flush()
+    assert config_manager.handler._updated is True

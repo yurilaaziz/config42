@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture
 def default_config():
     return {
@@ -17,4 +18,3 @@ def sample_config():
         'nested_dict': {'key': 'value', 'nested': {'key': 'value'}},
         'nested_list': [[''], ['value']]
     }
-

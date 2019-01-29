@@ -2,7 +2,7 @@ import collections
 
 import etcd
 
-from . import ConfigHandlerBase
+from .base import ConfigHandlerBase
 
 
 class Etcd(ConfigHandlerBase):
@@ -34,12 +34,22 @@ class Etcd(ConfigHandlerBase):
             Serialize and store the configuration key, values to the Etcd data store.
             :rtype: bool (success)
         """
-        # Reset this flag to False, to respect the concept
-        flat_dict = self.flatten(self._config,parent_key=self.keyspace, seperator='/')
+        flat_dict = self.flatten(self._config, parent_key=self.keyspace, seperator='/')
         for key, value in flat_dict.items():
             self.client.set(key, value)
         self._updated = False
         return True
+
+    def destroy(self):
+        """
+            destroys given keyspace in etcd
+            :rtype: bool (success)
+        """
+        try:
+            self.client.delete(self.keyspace, recursive=True, dir=True)
+            return True
+        except KeyError:
+            return False
 
     def recursive(self, directory, prefix='', seperator='/'):
         items = {}

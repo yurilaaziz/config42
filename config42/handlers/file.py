@@ -1,4 +1,4 @@
-from . import ConfigHandlerBase
+from .base import ConfigHandlerBase
 
 
 class File(ConfigHandlerBase):
