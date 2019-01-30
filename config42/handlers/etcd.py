@@ -1,8 +1,9 @@
-import collections
-
-import etcd
-
 from .base import ConfigHandlerBase
+
+try:
+    from etcd import Client, EtcdKeyNotFound
+except ImportError:
+    raise ImportError("Please install python-etcd package")
 
 
 class Etcd(ConfigHandlerBase):
@@ -15,7 +16,7 @@ class Etcd(ConfigHandlerBase):
             :type key: dict
         """
         super().__init__()
-        self.client = etcd.Client(**kwargs)
+        self.client = Client(**kwargs)
         self.keyspace = keyspace if keyspace else '/config'
 
     def load(self):
@@ -26,7 +27,7 @@ class Etcd(ConfigHandlerBase):
         try:
             directory = self.client.read(self.keyspace, recursive=True)
             return self.recursive(directory, prefix=self.keyspace)
-        except etcd.EtcdKeyNotFound:
+        except EtcdKeyNotFound:
             return {}
 
     def dump(self):
@@ -63,8 +64,8 @@ class Etcd(ConfigHandlerBase):
     def flatten(self, dict_, parent_key='', seperator='/'):
         items = []
         for key, value in dict_.items():
-            new_key = parent_key + seperator + key if parent_key else key
-            if isinstance(value, collections.MutableMapping):
+            new_key = (parent_key + seperator + key) if parent_key else key
+            if isinstance(value, dict):
                 items.extend(self.flatten(value, parent_key=new_key, seperator=seperator).items())
             else:
                 items.append((new_key, value))
