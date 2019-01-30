@@ -21,7 +21,7 @@ class DatabaseHandler(ConfigHandlerBase):
 
     @property
     def values_sql_format(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @property
     def insert_sql(self):
@@ -29,7 +29,7 @@ class DatabaseHandler(ConfigHandlerBase):
                (self.table, self.key_col, self.value_col, self.values_sql_format)
 
     def _connect(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def _query(self):
         cnx = self._connect()
