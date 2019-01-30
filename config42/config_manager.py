@@ -6,9 +6,9 @@ class ConfigManager:
         self.defaults = defaults if defaults else {}
 
         if not handler:
-            handler_cls = Memory
+            handler = Memory
 
-        self.handler = handler_cls(*args, **kwargs)
+        self.handler = handler(*args, **kwargs)
 
     def get_default(self, key):
         return self.recursive(key, obj=self.defaults)
