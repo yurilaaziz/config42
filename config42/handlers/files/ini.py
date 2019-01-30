@@ -6,15 +6,15 @@ from . import FileHandler
 class Ini(FileHandler):
     def load(self):
         cfg = ConfigParser()
-        file_read = cfg.read(self._file_path)
+        file_read = cfg.read(self._path)
         if not file_read:
             raise IOError("An error occured while trying to read INI file '" +
-                          self._file_path + "'")
+                          self._path + "'")
         return {s: dict(cfg.items(s)) for s in cfg.sections()}
 
     def dump(self):
         cfg = ConfigParser()
         cfg.read_dict(self._config)
-        with open(self._file_path, "w") as f:
+        with open(self._path, "w") as f:
             cfg.write(f)
         return True

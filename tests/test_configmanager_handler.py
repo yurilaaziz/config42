@@ -36,6 +36,6 @@ def test_default_handler_dump():
 def test_file_handler_init_with_file_path():
     with pytest.raises(TypeError):
         config_manager = config42.ConfigManager(handler=FileHandler)
-    config_manager = config42.ConfigManager(handler=FileHandler, file_path="path")
+    config_manager = config42.ConfigManager(handler=FileHandler, path="path")
 
 
