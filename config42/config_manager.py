@@ -1,4 +1,4 @@
-from config42.handlers.memory import Memory
+from config42.handlers import Memory
 
 
 class ConfigManager:
@@ -6,9 +6,9 @@ class ConfigManager:
         self.defaults = defaults if defaults else {}
 
         if not handler:
-            handler_cls = Memory
+            handler = Memory
 
-        self.handler = handler_cls(*args, **kwargs)
+        self.handler = handler(*args, **kwargs)
 
     def get_default(self, key):
         return self.recursive(key, obj=self.defaults)
@@ -61,10 +61,10 @@ class ConfigManager:
             :type trigger_commit: bool
             :rtype: bool (success)
         """
-        if self.recursive(key, obj=self.handler.as_dict()) == value:
+        if self.recursive(key, obj=self.handler._config) == value:
             return False  # Not updating
 
-        self.recursive(key, obj=self.handler.as_dict(), value=value)
+        self.recursive(key, obj=self.handler._config, value=value)
         self.handler._updated = True
         if trigger_commit:
             self.commit()
@@ -104,6 +104,3 @@ class ConfigManager:
 
     def commit(self):
         return self.handler.dump()
-
-# ConfigManager handles configuration for a given Flask Application
-# Supports default values, export/import from/to  file, etcd datastore and more ...

@@ -1,3 +1,11 @@
+[![Latest version on](https://badge.fury.io/py/config42.svg)](https://badge.fury.io/py/config42)
+
+[![Supported Python
+versions](https://img.shields.io/pypi/pyversions/config42.svg)](https://pypi.org/project/config42/)
+
+[![Travis Pipelines build
+status](https://img.shields.io/travis/com/yurilaaziz/config42.svg)](https://travis-ci.com/yurilaaziz/config42/)
+
 # Config42
 
 The config-manager package is a complete configuration reader and manager. It aims to read the configuration data 
