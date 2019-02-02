@@ -2,13 +2,13 @@ from config42.handlers import Memory
 
 
 class ConfigManager:
-    def __init__(self, defaults=None, handler=None, *args, **kwargs):
+    def __init__(self, defaults=None, handler=None, **handler_kwargs):
         self.defaults = defaults if defaults else {}
 
         if not handler:
             handler = Memory
 
-        self.handler = handler(*args, **kwargs)
+        self.handler = handler(**handler_kwargs)
 
     def get_default(self, key):
         return self.recursive(key, obj=self.defaults)

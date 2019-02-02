@@ -1,5 +1,5 @@
+from .base import ConfigHandlerBase
 from .etcd import Etcd
-from .file import File
 from .memory import Memory
 
-__all__ = ['Etcd', 'File', 'Memory']
+__all__ = ['Etcd', 'Memory', 'ConfigHandlerBase']
