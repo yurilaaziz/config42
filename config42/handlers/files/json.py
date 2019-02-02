@@ -1,9 +1,8 @@
 import json
 
-from . import FileHandler
+from .base  import FileHandlerBase
 
-
-class Json(FileHandler):
+class JsonHandler(FileHandlerBase):
     def load(self):
         with open(self._path, "r") as f:
             return json.load(f)

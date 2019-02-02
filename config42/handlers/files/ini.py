@@ -1,9 +1,8 @@
 from configparser import ConfigParser
 
-from . import FileHandler
+from .base  import FileHandlerBase
 
-
-class Ini(FileHandler):
+class IniHandler(FileHandlerBase):
     def load(self):
         cfg = ConfigParser()
         file_read = cfg.read(self._path)

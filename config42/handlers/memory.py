@@ -1,12 +1,10 @@
-from .base import ConfigHandlerBase
+from config42.handlers import ConfigHandlerBase
 
 
 class Memory(ConfigHandlerBase):
-    def __init__(self, keyspace=None, **kwargs):
+    def __init__(self):
         """
             Initializes the handler data store.
-            :param keyspace: etcd keyspace for configuration map starting with /
-            :type key: string
             :param kwargs: generic params forwarded from the Configmanager
             :type key: dict
         """

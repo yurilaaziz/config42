@@ -4,10 +4,10 @@ except ImportError:
     raise ImportError("files.Yaml handler requires 'PyYAML' package\n"
                       "Install it with 'pip install pyyaml'")
 
-from . import FileHandler
+from .base  import FileHandlerBase
 
 
-class Yaml(FileHandler):
+class YamlHandler(FileHandlerBase):
     def load(self):
         with open(self._path, "r") as f:
             return yaml.load(f)

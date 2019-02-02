@@ -1,4 +1,4 @@
-from .base import ConfigHandlerBase
+from config42.handlers import ConfigHandlerBase
 
 try:
     from etcd import Client, EtcdKeyNotFound
