@@ -1,5 +1,4 @@
 import config42
-from config42.handlers.files import FileHandler
 
 
 def test_default_handler():

@@ -1,5 +1,6 @@
-from config42.handlers import ConfigHandlerBase
 import os
+
+from config42.handlers import ConfigHandlerBase
 
 
 class FileHandlerBase(ConfigHandlerBase):

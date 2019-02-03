@@ -4,7 +4,7 @@ except ImportError:
     raise ImportError("files.Yaml handler requires 'PyYAML' package\n"
                       "Install it with 'pip install pyyaml'")
 
-from .base  import FileHandlerBase
+from .base import FileHandlerBase
 
 
 class YamlHandler(FileHandlerBase):
