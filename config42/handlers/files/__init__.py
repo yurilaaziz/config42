@@ -10,6 +10,7 @@ class FileHandler(object):
         """
         handler_map = {
             'yaml': YamlHandler,
+            'yml': YamlHandler,
             'json': JsonHandler,
             'ini': IniHandler
         }
@@ -20,4 +21,4 @@ class FileHandler(object):
         if handler_map.get(extension):
             return handler_map.get(extension)(path=path, **kwargs)
         else:
-            raise ModuleNotFoundError("Only {} extensions are supported".format(handler_map.keys()))
+            raise ModuleNotFoundError("Only {} extensions are supported".format(", ".join(handler_map.keys())))

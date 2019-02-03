@@ -17,11 +17,11 @@ class ConfigHandlerBase:
     def dump(self):
         """
             Serialize and store the configuration key, values to the data store.
+            rest self._updated flag to False
+            self._updated = False
             :rtype: bool (success)
         """
-        # Reset this flag to False, to respect the concept
-        self._updated = False
-        return True
+        raise NotImplementedError
 
     def flush(self):
         """
@@ -34,11 +34,10 @@ class ConfigHandlerBase:
 
     def destroy(self):
         """
-            destroys persistent configuration. support is removed from disk or database
+            destroys persistent configuration. configuration is removed from disk or database
             :rtype: bool (success)
         """
-        del self._config
-        return True
+        raise NotImplementedError
 
     def as_dict(self):
         """

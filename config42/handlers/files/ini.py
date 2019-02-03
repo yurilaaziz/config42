@@ -13,6 +13,10 @@ class IniHandler(FileHandlerBase):
 
     def dump(self):
         cfg = ConfigParser()
+        for key, value  in self._config.items():
+            if not isinstance(value, dict):
+                raise AttributeError("INI configuration do not support nesting. section {} should contain dict".format(key))
+
         cfg.read_dict(self._config)
         with open(self._path, "w") as f:
             cfg.write(f)
