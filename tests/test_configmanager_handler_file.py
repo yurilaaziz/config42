@@ -69,7 +69,7 @@ def test_ini_not_supported_nesting(sample_config):
 
 
 def test_ini_content(tmp_path, sample_config_ini_with_sections):
-    file_path = os.fspath(tmp_path) + "/test.config.ini"
+    file_path = str(tmp_path) + "/test.config.ini"
     config_manager = config42.ConfigManager(handler=FileHandler, path=file_path)
     config_manager.set_many(sample_config_ini_with_sections)
     assert sample_config_ini_with_sections['section1']['key1'] == config_manager.get('section1.key1')
@@ -77,21 +77,21 @@ def test_ini_content(tmp_path, sample_config_ini_with_sections):
 
 
 def test_json_configuration_content(tmp_path, sample_config):
-    file_path = os.fspath(tmp_path) + "/test.config.json"
+    file_path = str(tmp_path) + "/test.config.json"
     config_manager = config42.ConfigManager(handler=FileHandler, path=file_path)
     config_manager.set_many(sample_config)
     assert_configuration_content(config_manager, sample_config)
 
 
 def test_yaml_configuration_content(tmp_path, sample_config):
-    file_path = os.fspath(tmp_path) + "/test.config.yml"
+    file_path = str(tmp_path) + "/test.config.yml"
     config_manager = config42.ConfigManager(handler=FileHandler, path=file_path)
     config_manager.set_many(sample_config)
     assert_configuration_content(config_manager, sample_config)
 
 
 def test_generic_init_with_file_path(tmp_path):
-    file_path_base = os.fspath(tmp_path) + "/test.config."
+    file_path_base = str(tmp_path) + "/test.config."
     for extension in ['yml', 'yaml', 'ini', 'json']:
         file_path = file_path_base + extension
         config_manager = config42.ConfigManager(handler=FileHandler, path=file_path)
