@@ -1,114 +1,51 @@
+from unittest.mock import Mock
+
 import pytest
 
-import config42
+from config42 import ConfigManager, Defaults
 
 
-@pytest.fixture
-def default_config():
-    return {
-        'defaultkey1': 'simple',
-        'defaultkey2': {'defaultkey2': 'simple'}
-    }
+def test_config_manager_init():
+    cfg = ConfigManager()
+    assert cfg._load_handlers == []
+    assert cfg._dump_handlers == []
+    handler = Defaults({})
+    cfg = ConfigManager(handler)
+    assert cfg._load_handlers == [handler]
+    assert cfg._dump_handlers == [handler]
+    cfg = ConfigManager(handler, load_handlers=[Defaults({})],
+                        dump_handlers=[Defaults({})])
+    assert cfg._load_handlers == [handler]
+    assert cfg._dump_handlers == [handler]
+    defaults = {"key": "value"}
+    cfg = ConfigManager(handler, defaults=defaults)
+    assert cfg._load_handlers[0] is handler
+    assert isinstance(cfg._load_handlers[1], Defaults)
+    assert cfg._load_handlers[1].cfg == defaults
+    assert cfg._dump_handlers == [handler]
 
 
-@pytest.fixture
-def config():
-    return {
-        'simple': 'value',
-        'bool': True,
-        'simple_dict': {'key': 'value'},
-        'nested_dict': {'key': 'value', 'nested': {'key': 'value'}},
-        'nested_list': [[''], ['value']]
-    }
+def test_config_manager_load():
+    handler = Defaults({"key": "value"})
+    cfg = ConfigManager(handler, defaults={"key": "other", "key2": "value2"})
+    assert cfg["key"] == "value"
+    assert cfg["key2"] == "value2"
+    cfg = ConfigManager(handler, autoload=False)
+    with pytest.raises(AssertionError):
+        _ = cfg["key"]
+    cfg.load()
+    assert cfg["key"] == "value"
 
 
-def test_configuration_content(config):
-    config_manager = config42.ConfigManager()
-    config_manager.set_many(config)
-    assert_configuration_content(config_manager, config)
-
-
-def assert_configuration_content(config_manager, config):
-    assert config['simple'] == config_manager.get('simple')
-    assert config['bool'] == config_manager.get('bool')
-    assert config['simple_dict']['key'] == config_manager.get('simple_dict.key')
-    assert config['nested_dict']['nested']['key'] == config_manager.get('nested_dict.nested.key')
-    assert config['nested_list'][0][0] == config_manager.get('nested_list.0.0')
-    assert config['nested_list'][1][0] == config_manager.get('nested_list.1.0')
-    assert config_manager.get('notindict') is None
-
-
-def test_configuration_setting(config):
-    config_manager = config42.ConfigManager()
-    for key, value in config.items():
-        config_manager.set(key, value)
-
-    assert_configuration_content(config_manager, config)
-
-
-def test_configuration_setting_nested_keys(config):
-    config_manager = config42.ConfigManager()
-    config_manager.set_many(config)
-    config_manager.set('key1', 'simple')
-    config_manager.set('key2.key2', 'simple')
-    config_manager.set('key3.key3.key3', 'simple')
-
-    assert 'simple' == config_manager.get('key1')
-    assert 'simple' == config_manager.get('key2.key2')
-    assert 'simple' == config_manager.get('key3.key3.key3')
-
-
-def test_configuration_setting_raise_exception(config):
-    config_manager = config42.ConfigManager()
-    config_manager.set_many(config)
-    with pytest.raises(AttributeError):
-        config_manager.set('nested_list.0.1', 'simple')
-
-
-def test_configuration_content_index_error(config):
-    config_manager = config42.ConfigManager()
-    config_manager.set_many(config)
-    assert config_manager.get('nested_list.0.4') is None
-
-
-def test_configuration_content_absent_keys():
-    config_manager = config42.ConfigManager()
-    assert config_manager.get('absentkey1') is None
-    assert config_manager.get('absentkey2.absentkey2') is None
-    assert config_manager.get('absentkey3.absentkey3.absentkey3') is None
-
-
-def test_configuration_default_values(default_config):
-    config_manager = config42.ConfigManager(defaults=default_config)
-
-    assert default_config['defaultkey1'] == config_manager.get('defaultkey1')
-    assert default_config['defaultkey2']['defaultkey2'] == config_manager.get('defaultkey2.defaultkey2')
-    assert config_manager.get('absentkey3.absentkey3.absentkey3') is None
-
-
-def test_configuration_replace(default_config, config):
-    config_manager = config42.ConfigManager()
-
-    config_manager.set_many(config)
-    assert config['simple'] == config_manager.get('simple')
-    config_manager.replace(default_config)
-    assert config_manager.get('simple') is None
-    assert default_config['defaultkey1'] == config_manager.get('defaultkey1')
-
-
-def test_configuration_trigger_commit(config):
-    config_manager = config42.ConfigManager()
-
-    config_manager.set_many(config)
-    config_manager.commit()
-    assert config['simple'] == config_manager.get('simple')
-
-    config_manager.set('new_key', 'new_value')
-    assert config_manager.handler._updated is False
-    config_manager.set('new_key2', 'new_value2', trigger_commit=False)
-    assert config_manager.handler._updated is True
-    config_manager.commit()
-    assert config_manager.handler._updated is False
-
-    config_manager.set('new_key', 'new_value', trigger_commit=True)
-    assert config_manager.handler._updated is False
+def test_config_manager_dump():
+    h1, h2 = Mock(), Mock()
+    cfg = ConfigManager(dump_handlers=[h1, h2])
+    cfg.dump()
+    h1.dump.assert_called_once_with(cfg.cfg)
+    h2.dump.assert_called_once_with(cfg.cfg)
+    h1.reset_mock()
+    h2.reset_mock()
+    assert not cfg._updated
+    cfg.dump(if_updated=True)
+    h1.dump.assert_not_called()
+    h2.dump.assert_not_called()

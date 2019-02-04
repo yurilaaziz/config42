@@ -1,50 +1,29 @@
-import logging
+class ConfigHandler:
+    """
+    Read/write accessor to a configuration source
+    """
 
-LOGGER = logging.getLogger('config-manger')
-LOGGER.addHandler(logging.NullHandler())
-
-
-class ConfigHandlerBase:
-
-    def __init__(self):
+    def create(self):
         """
-            Initialize the handler data store.
+        Creates a configuration source (creating file/database table/etc.)
         """
-        self._config = {}
-        self._updated = False
+        raise NotImplementedError
 
     def load(self):
         """
-            Load all configuration key values from the data store. Returns a nested dict.
-            :rtype: dict
+        Loads configuration from the source
+        :return nested list/dict
         """
-        return {}
+        raise NotImplementedError
 
-    def dump(self):
+    def dump(self, cfg):
         """
-            Serialize and store the configuration key, values to the data store.
-            :rtype: bool (success)
+        Serializes and store the configuration to the source
         """
-        # Reset this flag to False, to respect the concept
-        self._updated = False
-        return True
+        raise NotImplementedError
 
-    def flush(self):
+    def destroy(self):
         """
-            flush in memory configuration.
-            :rtype: bool (success)
+        Destroys configuration source (removing it from disk/database/etc.)
         """
-        self._config = {}
-        return True
-
-    def as_dict(self):
-        """
-            Serialize the current configuration key, values.
-            :rtype: dict
-        """
-        if self._updated:
-            # Listen to yourself
-            # Always read from the data store
-            self.dump()
-            self._config = self.load()
-        return self._config
+        raise NotImplementedError

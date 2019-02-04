@@ -1,10 +1,5 @@
-from .. import ConfigHandlerBase
+from config42.handlers.files.ini import Ini
+from config42.handlers.files.json import Json
+from config42.handlers.files.yaml import Yaml
 
-
-class FileHandler(ConfigHandlerBase):
-    def __init__(self, *, path):
-        """
-            :param path: path of the config file
-        """
-        super().__init__()
-        self._path = path
+__all__ = [Json, Yaml, Ini]

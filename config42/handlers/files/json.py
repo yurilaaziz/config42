@@ -1,6 +1,6 @@
 import json
 
-from . import FileHandler
+from config42.handlers.files.handler import FileHandler
 
 
 class Json(FileHandler):
@@ -8,7 +8,6 @@ class Json(FileHandler):
         with open(self._path, "r") as f:
             return json.load(f)
 
-    def dump(self):
+    def dump(self, cfg):
         with open(self._path, "w") as f:
-            json.dump(self._config, f)
-        return True
+            json.dump(cfg, f)
