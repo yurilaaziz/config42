@@ -1,0 +1,8 @@
+---
+application_name: myapp
+user: user
+api_key : Token_s3cr3t
+nested:
+  key1: value1
+  nestedkey:
+    key2: value2

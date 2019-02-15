@@ -8,8 +8,8 @@ class IniHandler(FileHandlerBase):
         cfg = ConfigParser()
         file_read = cfg.read(self._path)
         if not file_read:
-            raise IOError("An error occured while trying to read INI file '" +
-                          self._path + "'")
+            raise Exception("An error occurred while trying to read INI file '" +
+                            self._path + "'")
         return {s: dict(cfg.items(s)) for s in cfg.sections()}
 
     def dump(self):

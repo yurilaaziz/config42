@@ -7,6 +7,11 @@ class FileHandlerBase(ConfigHandlerBase):
     def __init__(self, *, path):
         super().__init__()
         self._path = path
+        try:
+            config = self.load()
+        except Exception:
+            config = None
+        self._config = config if config is not None else {}
 
     def destroy(self):
         """

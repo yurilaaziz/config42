@@ -3,7 +3,7 @@ from uuid import uuid1
 import pytest
 
 import config42
-from config42.handlers.etcd import Etcd
+from config42.handlers import Etcd
 
 
 @pytest.fixture

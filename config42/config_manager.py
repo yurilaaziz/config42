@@ -10,7 +10,7 @@ class ConfigManager:
 
         self.handler = handler(**handler_kwargs)
 
-    def get_default(self, key):
+    def get_defaults(self, key):
         return self.recursive(key, obj=self.defaults)
 
     def recursive(self, key, obj, value=None):
@@ -41,18 +41,18 @@ class ConfigManager:
 
     def get(self, key):
         """
-            Get config value for a given key from the data store. Returns the value that matches the supplied key.
+            Gets config value for a given key from the data store. Returns the value that matches the supplied key.
             If the value is not set, a default value will be returned as set by set_defaults.
             :param key: The configuration key to return a config value for
             :type key: str
             :rtype: Any supported (str, int, bool, list-of-supported-types)
         """
         value = self.recursive(key, obj=self.handler.as_dict())
-        return value if value is not None else self.get_default(key)
+        return value if value is not None else self.get_defaults(key)
 
     def set(self, key, value, trigger_commit=True):
         """
-            Set config value for a given key in the data store.
+            Sets config value for a given key in the data store.
             :param key: The configuration key to set
             :type key: str
             :param value: The value to set the configuration key to
@@ -86,7 +86,7 @@ class ConfigManager:
 
     def set_many(self, config, trigger_commit=True):
         """
-        Set the value of multiple config settings simultaneously.
+        Sets the value of multiple config settings simultaneously.
         This postpones the
         triggering of the commit signal after all values are set.
         :param config: A dictionary of keys and values to set.

@@ -18,6 +18,7 @@ class Etcd(ConfigHandlerBase):
         super().__init__()
         self.client = Client(**kwargs)
         self.keyspace = keyspace if keyspace else '/config'
+        self._config = self.load()
 
     def load(self):
         """

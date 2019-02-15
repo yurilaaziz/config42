@@ -10,6 +10,7 @@ class Memory(ConfigHandlerBase):
         """
         super().__init__()
         self.in_memory_config = {}
+        self._config = {}
 
     def load(self):
         """
