@@ -1,20 +1,24 @@
 sudo: false
 language: python
-
 services:
-  - docker
-
+- docker
 before_install:
 - docker pull quay.io/coreos/etcd:v2.3.8
-- docker run -d -v /usr/share/ca-certificates/:/etc/ssl/certs -p 4001:4001 -p 2380:2380 -p 2379:2379  --name etcd quay.io/coreos/etcd:v2.3.8  -name etcd0  -advertise-client-urls http://127.0.0.1:2379,http://127.0.0.1:4001  -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001  -initial-advertise-peer-urls http://127.0.0.1:2380  -listen-peer-urls http://0.0.0.0:2380  -initial-cluster-token etcd-cluster-1  -initial-cluster etcd0=http://127.0.0.1:2380  -initial-cluster-state new
-
+- docker run -d -v /usr/share/ca-certificates/:/etc/ssl/certs -p 4001:4001 -p 2380:2380
+  -p 2379:2379  --name etcd quay.io/coreos/etcd:v2.3.8  -name etcd0  -advertise-client-urls
+  http://127.0.0.1:2379,http://127.0.0.1:4001  -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001  -initial-advertise-peer-urls
+  http://127.0.0.1:2380  -listen-peer-urls http://0.0.0.0:2380  -initial-cluster-token
+  etcd-cluster-1  -initial-cluster etcd0=http://127.0.0.1:2380  -initial-cluster-state
+  new
 python:
-  - "3.4"
-  - "3.5"
-  - "3.6"
-  - "3.7-dev"
+- '3.4'
+- '3.5'
+- '3.6'
+- 3.7-dev
 install: pip install tox-travis coverage
 script: tox
-
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
+notifications:
+  slack:
+    secure: bFN4L7a6X4utntF1FuNKH2cqlCyLiHCyBWcqRj//bpPMOlbfeBl4E2uucHRXDS29dTosNcPdJzMbq0xriDFO6xdo7Jz5qP/amw92rS12HWyYtTuomKPQAn5Uh0WEzC4PhngOsZSLO0Hnb077O5co9f6ZFYxfISNUVMXGBE+TSF7pZ8ejYdzwXw4oTVjin1X0vod+tCWoV359mzwAVXQlGDdmRto7TrZZwxj/zFK+SUQpWQj1t0u88FNCRFGi0itvOP9MwY7KcypfHpNylbkvzQv0bVyempNouMONNU/pgVIpeNmOzdhuwI+VRB+O1MVSfzoodp752dt/S+Dq3hIdfHq7B6UF8H+gBBeVpeakdtjCAmhtA99Y3KvxQdsJMR+xkgjKhL1Myqrb82WKgirk5vXMVBPRZFdJoYOmINZ9QVM6hqzVzLBnXv3Nta2MKS750jVPoFOg0AEO0JwvwuHMOEwCjrr0mOLcG2qMkbSILsqzSJDf34klcKbMAul+TauvOvxgdLI+D2fA1aHy/XMjsef/5zK+wCAcXrbgA76YkdCk/npa7J4E1Ql6a4LURaF7wGjTumXCQGAw4OyzcHMnEqWe2wFb4gC+ghFFr6wZVGlJ7/5YY3PklFG4VMJP2MbPcoAiD093UoNG+wqZv6hZKxzJigrTj+m8ZtOr51JopPU=
