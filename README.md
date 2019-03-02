@@ -20,7 +20,7 @@ It is designed to be extensible. Other data store could be supported by differen
 
 `pip install config42`
 
-## Getting started`
+## Getting started
 ### Using Etcd  Handler 
 To load configuration from Etcd data store, you need to specify the *keyspace* where the configuration is located
 
@@ -106,3 +106,9 @@ pip install -r requirements/tests.txt
 
 ## TODO
 * readthedoc with sphinx
+
+## Releases
+
+#### 0.2
+* Add Etcd Handler
+* Add Ini Yaml, Json Handlers

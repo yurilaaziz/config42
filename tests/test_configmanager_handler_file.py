@@ -99,3 +99,14 @@ def test_generic_init_with_file_path(tmp_path):
         assert os.path.exists(file_path) is True
         config_manager.handler.destroy()
         assert os.path.exists(file_path) is False
+
+
+def test_generic_init_without_explicit_handler(tmp_path):
+    file_path_base = str(tmp_path) + "/test.config."
+    for extension in ['yml', 'yaml', 'ini', 'json']:
+        file_path = file_path_base + extension
+        config_manager = config42.ConfigManager(path=file_path)
+        config_manager.set("key.sub", "value")
+        assert os.path.exists(file_path) is True
+        config_manager.handler.destroy()
+        assert os.path.exists(file_path) is False

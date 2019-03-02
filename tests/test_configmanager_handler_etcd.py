@@ -32,6 +32,11 @@ def test_load_empty_config():
     assert config_manager.handler.load() is not None
 
 
+def test_no_explicit_handler():
+    config_manager = config42.ConfigManager(keyspace='/absent_key_' + uuid1().hex)
+    assert config_manager.handler.load() is not None
+
+
 def test_content(sample_config):
     config_manager = config42.ConfigManager(handler=Etcd, keyspace='/absent_key_' + uuid1().hex)
     config_manager.set_many(sample_config)

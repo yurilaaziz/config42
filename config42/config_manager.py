@@ -1,14 +1,23 @@
-from config42.handlers import Memory
+from config42.init_apps import InitApp
 
 
 class ConfigManager:
-    def __init__(self, defaults=None, handler=None, **handler_kwargs):
+    def __init__(self, application=None, defaults=None, handler=None, **handler_kwargs):
         self.defaults = defaults if defaults else {}
-
+        # Implicit load of handlers
+        if handler_kwargs.get('path'):
+            from config42.handlers import FileHandler
+            handler = FileHandler
+        elif handler_kwargs.get('keyspace'):
+            from config42.handlers import Etcd
+            handler = Etcd
         if not handler:
+            from config42.handlers import Memory
             handler = Memory
-
         self.handler = handler(**handler_kwargs)
+
+        if application:
+            self.init_app(application)
 
     def get_defaults(self, key):
         return self.recursive(key, obj=self.defaults)
@@ -104,3 +113,6 @@ class ConfigManager:
 
     def commit(self):
         return self.handler.dump()
+
+    def init_app(self, app):
+        return InitApp.init_app(self.handler.as_dict(), app)
