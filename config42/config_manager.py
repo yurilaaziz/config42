@@ -116,3 +116,6 @@ class ConfigManager:
 
     def init_app(self, app):
         return InitApp.init_app(self.handler.as_dict(), app)
+
+    def as_dict(self):
+        return self.handler.as_dict()

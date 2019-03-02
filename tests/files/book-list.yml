@@ -1,0 +1,13 @@
+---
+- id: 1
+  name: The art of deception
+  author: Mitnick
+  isbn: 723812622115
+- id: 2
+  name: Design pattern
+  author: Richard Helm
+  isbn: 1723815487566457
+- id: 3
+  name: Design pattern explained
+  Author: Alan Shalloway
+  isbn: 1723815487566457

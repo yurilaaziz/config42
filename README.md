@@ -53,7 +53,7 @@ config = ConfigManager(handler=FileHandler, path='files/config1.yml')
 #INI structure support only one level of nesting (Sections = { key: value }) 
 #config = ConfigManager(handler=FileHandler, path='files/config.ini')
 
-CONFIG = config.handler.as_dict()
+CONFIG = config.as_dict()
 
 print("Configuration has been loaded")
 pprint(CONFIG)
@@ -63,7 +63,7 @@ print("application_name : {}".format(config.get('application_name')))
 print("nested key : {}".format(config.get('nested.nestedkey.key2')))
 
 # Access to configuration via the as dict utility; it will dump configuration file to data store if updated
-print("user : {}".format(config.handler.as_dict()['user']))
+print("user : {}".format(config.as_dict()['user']))
 
 # Access to configuration via the classic CONFIG global variable
 print("application_name : {}".format(CONFIG['application_name']))

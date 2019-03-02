@@ -1,6 +1,5 @@
 <!--
 Before opening a new issue, please ensure:
-- YOU HAVE READ THE ISSUE GUIDELINES! -> https://github.com/instabot-py/instabot.py/wiki/Issue-Guidelines
 - You search for existing bugs/feature requests
 - Remove extraneous template details
 - Do not prefix title with type of issue (Feature Request, Bug, etc.) The appropriate labels will be added during triage.
@@ -13,7 +12,7 @@ Check this or we will delete your issue. (fill in the checkbox with an X like so
 - [ ] I have searched for other issues with the same problem or similar feature requests. 
 
 #### Select one:
-- [ ] Bug
+- [ ] Bug 
 - [ ] Feature Request
 - [ ] Technical Help
 - [ ] Other
