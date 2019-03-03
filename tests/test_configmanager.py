@@ -139,3 +139,10 @@ def test_load_and_dump_flush(sample_config):
 def test_flush_db():
     config_manager = ConfigManager()
     assert config_manager.handler.load() is not None
+
+
+def test_loop_as_dict(sample_config):
+    config_manager = ConfigManager()
+    config_manager.set_many(sample_config)
+    assert len(config_manager.as_dict()) > 0
+    assert config_manager.as_dict() == config_manager.handler.as_dict()
