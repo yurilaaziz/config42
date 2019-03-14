@@ -15,6 +15,6 @@ class FileHandler(object):
             elif extension.lower() == "ini":
                 from .ini import IniHandler as Handler
         else:
-            raise NotImplementedError("Only {} extensions are supported".format(", ".join(handler_map.keys())))
+            raise NotImplementedError("Only yaml, json, ini extensions are supported")
 
         return Handler(path=path, **kwargs)
