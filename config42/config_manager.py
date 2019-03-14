@@ -6,13 +6,13 @@ class ConfigManager:
         self.defaults = defaults if defaults else {}
         # Implicit load of handlers
         if handler_kwargs.get('path'):
-            from config42.handlers import FileHandler
+            from config42.handlers.files import FileHandler
             handler = FileHandler
         elif handler_kwargs.get('keyspace'):
-            from config42.handlers import Etcd
+            from config42.handlers.etcd import Etcd
             handler = Etcd
         if not handler:
-            from config42.handlers import Memory
+            from config42.handlers.memory import Memory
             handler = Memory
         self.handler = handler(**handler_kwargs)
 
