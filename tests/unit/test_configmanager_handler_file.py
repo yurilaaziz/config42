@@ -11,25 +11,6 @@ def test_default_handler():
     assert isinstance(config_manager.handler, config42.handlers.memory.Memory)
 
 
-@pytest.fixture
-def sample_config_ini_with_sections():
-    return {
-        'section1': {'key1': 'value'},
-        'section2': {'key2': 'value'},
-    }
-
-
-@pytest.fixture
-def sample_config():
-    return {
-        'simple': 'value',
-        'bool': True,
-        'simple_dict': {'key': 'value'},
-        'nested_dict': {'key': 'value', 'nested': {'key': 'value'}},
-        'nested_list': [[''], ['value']]
-    }
-
-
 def assert_configuration_content(config_manager, config):
     assert config['simple'] == config_manager.get('simple')
     assert config['bool'] == config_manager.get('bool')

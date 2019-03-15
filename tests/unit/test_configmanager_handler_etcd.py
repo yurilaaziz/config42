@@ -1,20 +1,7 @@
 from uuid import uuid1
 
-import pytest
-
 import config42
 from config42.handlers.etcd import Etcd
-
-
-@pytest.fixture
-def sample_config():
-    return {
-        'simple': 'value',
-        'bool': True,
-        'simple_dict': {'key': 'value'},
-        'nested_dict': {'key': 'value', 'nested': {'key': 'value'}},
-        'nested_list': [[''], ['value']]
-    }
 
 
 def assert_configuration_content(config_manager, config):
