@@ -24,7 +24,7 @@ setup(
     author="Amine Ben Asker",
     author_email="ben.asker.amine@gmail.com",
     url="https://github.com/yurilaaziz/config42",
-    download_url="https://github.com/yurilaaziz/config42/releases/tag/0.1",
+    download_url="https://github.com/yurilaaziz/config42/releases/tag/0.2",
     keywords="Pretty configuration manager, Key value data store, cloud native configuration",
     install_requires=required,
     classifiers=[
