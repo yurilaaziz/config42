@@ -11,6 +11,9 @@ class ConfigManager:
         elif handler_kwargs.get('keyspace'):
             from config42.handlers.etcd import Etcd
             handler = Etcd
+        elif handler_kwargs.get('prefix'):
+            from config42.handlers.environment import Environment
+            handler = Environment
         if not handler:
             from config42.handlers.memory import Memory
             handler = Memory
