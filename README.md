@@ -109,6 +109,10 @@ pip install -r requirements/tests.txt
 
 ## Releases
 
+#### 0.3
+* Add Environment Handler
+
 #### 0.2
+
 * Add Etcd Handler
 * Add Ini Yaml, Json Handlers
