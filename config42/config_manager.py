@@ -25,7 +25,7 @@ class ConfigManager:
     def get_defaults(self, key):
         return self.recursive(key, obj=self.defaults)
 
-    def recursive(self, key, obj, value=None):
+    def recursive(self, key, obj, value=None, update=False):
         _keys = key.split('.')
         assert len(_keys) > 0
 
@@ -34,22 +34,25 @@ class ConfigManager:
         else:
             _base = _keys[0]
 
-        if isinstance(obj, dict) and _base not in obj and not value:
+        if isinstance(obj, dict) and _base not in obj and not update:
             return None
-        if isinstance(obj, list) and _base >= len(obj) and not value:
+        if isinstance(obj, list) and _base >= len(obj) and not update:
             return None
-        elif isinstance(obj, list) and value:
+        elif isinstance(obj, list) and update:
             raise AttributeError("Insertion in list is not allowed")
 
+        if isinstance(obj, str) and _base and not update:
+            raise AttributeError("Cannot get {}' key from string.")
+
         if len(_keys) == 1:
-            if value:
+            if update:
                 obj[_base] = value
             return obj[_base]
         else:
             if isinstance(obj, dict) and _base not in obj:
                 obj[_base] = dict()
 
-            return self.recursive('.'.join(_keys[1:]), obj[_base], value)
+            return self.recursive('.'.join(_keys[1:]), obj[_base], value, update)
 
     def get(self, key):
         """
@@ -62,7 +65,7 @@ class ConfigManager:
         value = self.recursive(key, obj=self.handler.as_dict())
         return value if value is not None else self.get_defaults(key)
 
-    def set(self, key, value, trigger_commit=True):
+    def set(self, key, value, default=False, trigger_commit=True):
         """
             Sets config value for a given key in the data store.
             :param key: The configuration key to set
@@ -73,11 +76,13 @@ class ConfigManager:
             :type trigger_commit: bool
             :rtype: bool (success)
         """
-        if self.recursive(key, obj=self.handler._config) == value:
+        obj = self.defaults if default else self.handler._config
+        if self.recursive(key, obj) == value:
             return False  # Not updating
 
-        self.recursive(key, obj=self.handler._config, value=value)
-        self.handler._updated = True
+        self.recursive(key, obj, value=value, update=True)
+        if not default:
+            self.handler._updated = True
         if trigger_commit:
             self.commit()
 

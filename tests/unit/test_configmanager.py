@@ -45,6 +45,10 @@ def test_configuration_setting_raise_exception(sample_config):
     with pytest.raises(AttributeError):
         config_manager.set('nested_list.0.1', 'simple')
 
+    config_manager.set('absentkey4', "value")
+    with pytest.raises(AttributeError):
+        assert config_manager.get('absentkey4.absentkey3.absentkey3') == "value"
+
 
 def test_configuration_content_index_error(sample_config):
     config_manager = ConfigManager()
@@ -65,6 +69,15 @@ def test_configuration_default_values(default_config):
     assert default_config['defaultkey1'] == config_manager.get('defaultkey1')
     assert default_config['defaultkey2']['defaultkey2'] == config_manager.get('defaultkey2.defaultkey2')
     assert config_manager.get('absentkey3.absentkey3.absentkey3') is None
+
+
+def test_configuration_update_default_value(default_config):
+    config_manager = ConfigManager(defaults=default_config)
+    assert config_manager.get('absentkey3.absentkey3.absentkey3') is None
+    config_manager.set('absentkey3.absentkey3.absentkey3', "value", default=True)
+    config_manager.set('absentkey4', "value", default=True)
+
+    assert config_manager.as_dict().get('absentkey3') is None
 
 
 def test_configuration_replace(default_config, sample_config):
