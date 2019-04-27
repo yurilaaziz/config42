@@ -17,10 +17,6 @@ Check this or we will delete your issue. (fill in the checkbox with an X like so
 - [ ] Technical Help
 - [ ] Other
 
-#### Environment
-- [ ] Are you hosting the bot on a VPS or other Cloud hosting?
-- [ ] If so, have you tried running the code on your local machine?
-
 #### Operating System? (include version)
 - [ ] macOS
 - [ ] Windows

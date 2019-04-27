@@ -109,6 +109,8 @@ pip install -r requirements/tests.txt
 
 ## Releases
 
+#### 0.3.1
+* Add set default variables feature
 #### 0.3
 * Add Environment Handler
 
