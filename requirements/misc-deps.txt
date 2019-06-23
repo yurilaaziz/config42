@@ -1,6 +1,5 @@
 # Handlers
 python-etcd
-Pyaml
 
 #extensions
 flask

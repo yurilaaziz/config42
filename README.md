@@ -155,7 +155,7 @@ if config_etcd:
     except Exception as exc:
         LOGGER.error(
             "Setting external configuration from ({}) : NOT OK".format(
-                ",".join({key + "=" + value for key, value in config_etcd.item() or {}})
+                ",".join({key + "=" + value for key, value in config_etcd.items() or {}})
             ))
 
         LOGGER.exception(exc)
