@@ -1,4 +1,5 @@
 from pprint import pprint
+
 from config42 import ConfigManager
 from config42.handlers import FileHandler
 
@@ -11,7 +12,6 @@ pprint(CONFIG)
 # Access to configuration via the ConfigManager getter
 print("application_name : {}".format(config.get('application_name')))
 print("nested key : {}".format(config.get('nested.nestedkey.key2')))
-
 
 # Access to configuration via the as dict utility; it will dump configuration file to data store if updated
 print("user : {}".format(config.handler.as_dict()['user']))

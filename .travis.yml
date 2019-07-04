@@ -1,4 +1,4 @@
-sudo: false
+dist: xenial  # required for Python >= 3.7
 language: python
 services:
 - docker
@@ -14,7 +14,7 @@ python:
 - '3.4'
 - '3.5'
 - '3.6'
-- 3.7-dev
+- '3.7-dev'
 install: pip install tox-travis coverage
 script: tox
 after_success:
