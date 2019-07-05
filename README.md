@@ -10,6 +10,10 @@ alternatively, Key-value data store ( Etcd )
 It is designed to be extensible. Different handlers could support another data store. 
 All PR are welcome. 
 
+## Related blog posts
+
+* [Easy configuration management with config42 for Python applications](https://medium.com/@asker_amine/easy-configuration-management-with-config42-for-python-applications-8e90bf4c6450)
+
 ## Install 
 
 **From sources:**  (Bleeding edge)
