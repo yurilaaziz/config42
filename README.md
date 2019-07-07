@@ -109,6 +109,21 @@ print("application_name : {}".format(CONFIG['application_name']))
 print("nested key : {}".format(CONFIG['nested']['nestedkey']['key2']))
 ````
 
+### Using argparse, Load configuration from commandline parameters (sys.argv)
+ 
+```python
+from config42 import ConfigManager
+from config42.handlers.argparse import Argparse
+
+schema = [
+    dict(key="user", description="username"),
+    dict(key="verbosity", description="verbosity level", choices=["debug", "info"]),
+    
+]
+config = ConfigManager(handler=Argparse, schema=schema)
+```
+Please take a look to the [example using Argparse's handler](examples/cmdline.py)
+
 ## Real use case
 Below is a real use from Instabot-Py project that uses this library as a configuration manager.
 
@@ -119,7 +134,6 @@ config42 handles 4 sources of configuration data in order of priority:
 * Local file where value located in config.file (INSTABOT_CONFIG_FILE)
 * Etcd data-store
 
-ref : [https://github.com/yurilaaziz/instabot.py](https://github.com/yurilaaziz/instabot.py)
 ref : [https://github.com/instabot-py/instabot.py](https://github.com/instabot-py/instabot.py) 
 
 ```python
