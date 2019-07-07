@@ -1,0 +1,9 @@
+---
+config42:
+  default:
+    handler: config42.handlers:FileHandler
+    path: files/flask-app.yml
+  environment:
+    prefix: BARBEROUSSE
+
+nested: value
