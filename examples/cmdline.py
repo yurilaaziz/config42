@@ -1,5 +1,5 @@
 from config42 import ConfigManager
-from config42.handlers.argparse import Argparse
+from config42.handlers.argparse import ArgParse
 
 schema = [
     dict(
@@ -19,6 +19,6 @@ schema = [
     )
 ]
 
-config = ConfigManager(handler=Argparse, schema=schema)
+config = ConfigManager(handler=ArgParse, schema=schema)
 
 print(config.as_dict())
