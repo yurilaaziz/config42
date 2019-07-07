@@ -2,9 +2,14 @@ import pytest
 
 
 @pytest.fixture
+def pwd(project_working_dir):
+    return project_working_dir
+
+
+@pytest.fixture
 def cwd():
-    from os.path import dirname, realpath
-    cwd = dirname(realpath(__file__)) + "/.."
+    from os.path import dirname, join
+    cwd = join(dirname(__file__))
     return cwd
 
 
