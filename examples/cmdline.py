@@ -1,6 +1,6 @@
 from config42 import ConfigManager
 from config42.handlers.argparse import ArgParse
-
+from pprint import pprint
 schema = [
     dict(
         name="first name",
@@ -14,11 +14,22 @@ schema = [
         key="user.email",
         description="A valid email address"
     ), dict(
+        name="Action",
         key="action",
         choices=["create", "delete"],
+        default="create"
+    ), dict(
+        name="logging level",
+        key="logging.level",
+        description="Logging verbosity level",
+        choices=["critical", "error", "warning", "info", "debug"],
+        type="string"
+
     )
 ]
 
-config = ConfigManager(handler=ArgParse, schema=schema)
-
-print(config.as_dict())
+try:
+    config = ConfigManager(handler=ArgParse, schema=schema)
+    pprint(config.as_dict())
+except Exception as exc:
+    pprint(exc)

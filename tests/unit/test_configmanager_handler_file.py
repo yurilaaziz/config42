@@ -37,7 +37,7 @@ def test_default_handler_dump():
     assert memory_handler.dump()
 
 
-def test_ini_init_with_file_path():
+def test_ini_init_without_file_path():
     with pytest.raises(TypeError):
         _ = config42.ConfigManager(handler=FileHandler)
 

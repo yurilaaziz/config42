@@ -5,7 +5,7 @@ from config42.handlers.memory import Memory
 
 
 class Environment(Memory):
-    def __init__(self, prefix):
+    def __init__(self, prefix, **kwargs):
         """
             Initialize the handler data store.
             :param prefix: environment prefix for configuration map

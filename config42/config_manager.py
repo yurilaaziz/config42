@@ -3,39 +3,60 @@ from importlib import import_module
 
 from jinja2 import Environment, BaseLoader
 
+from config42.handlers.memory import Memory
 from config42.init_apps import InitApp
+from config42.validator import DefaultValidator
 
 
 class ConfigManager:
-    def __init__(self, application=None, nested_configuration_key=None, defaults=None, **handler_kwargs):
+    def __init__(self, application=None, nested_configuration_key=None, defaults=None, validator=None,
+                 **handler_kwargs):
         self.logger = logging.getLogger()
         self.jinja2_recurse_limit = 10
         self.jinja2_env = Environment(loader=BaseLoader())
+        self.validator = validator
+        schema = handler_kwargs.get('schema')
+        if self.validator is None and schema:
+            self.validator = DefaultValidator(schema)
+
         self.defaults = defaults if defaults else {}
         self.nested_configuration_key = nested_configuration_key if nested_configuration_key else "config42"
         # Implicit load of handlers
-        self.handler = self.load_handler(**handler_kwargs)
-        self.load_nested()
 
+        self.handler = self.load_handler(**handler_kwargs)
+        if schema:
+            self.load_defaults(schema)
+        self.load_nested()
+        self.validate()
         if application:
             self.init_app(application)
 
+    def validate(self):
+        if self.validator:
+            return self.validator.validate(self)
+
+    def load_defaults(self, schema):
+        for item in schema:
+            if item.get('default'):
+                self.set(item.get('key'), item.get('default'), default=True)
+
     def load_handler(self, handler=None, **kwargs):
-        if kwargs.get('path'):
-            from config42.handlers.files import FileHandler
-            handler = FileHandler
-        elif kwargs.get('keyspace'):
-            from config42.handlers.etcd import Etcd
-            handler = Etcd
-        elif kwargs.get('prefix'):
-            from config42.handlers.environment import Environment as EnvironmentHandler
-            handler = EnvironmentHandler
-        elif handler is None:
-            from config42.handlers.memory import Memory
-            handler = Memory
+        if handler is None:
+            if kwargs.get('path'):
+                from config42.handlers.files import FileHandler
+                handler = FileHandler
+            elif kwargs.get('keyspace'):
+                from config42.handlers.etcd import Etcd
+                handler = Etcd
+            elif kwargs.get('prefix'):
+                from config42.handlers.environment import Environment as EnvironmentHandler
+                handler = EnvironmentHandler
+            else:
+                handler = Memory
+
         return handler(**kwargs)
 
-    def load_nested(self, **kwargs):
+    def load_nested(self):
         nested = {}
         handlers = self.get(self.nested_configuration_key)
 

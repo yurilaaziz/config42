@@ -20,7 +20,11 @@ class ArgParse(Memory):
             flags_name = item.get('source', {}).get('argv', ['--' + item['key']])
             if flags_name:
                 parser.add_argument(*flags_name,
-                                    type=item.get('type'),
+                                    type={'string': str,
+                                          'integer': int,
+                                          'float': float,
+                                          'boolean': bool
+                                          }.get(item.get('type'), str),
                                     choices=item.get('choices'),
                                     help=item.get('description'),
                                     metavar=item.get('name'),

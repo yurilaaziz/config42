@@ -2,7 +2,7 @@ from config42.handlers import ConfigHandlerBase
 
 
 class Memory(ConfigHandlerBase):
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
             Initializes the handler data store.
             :param kwargs: generic params forwarded from the Configmanager

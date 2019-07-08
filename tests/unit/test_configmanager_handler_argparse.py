@@ -9,11 +9,8 @@ SCHEMA = [
         description="First Key long description",
         source=dict(argv=["-k", "--keyone"]),
         key="keyone",
-        choices=None,
-        default=None,
         required=True,
-        freezed=False,
-        type=str
+        type="string"
 
     ), dict(
         name="Key two",
@@ -24,12 +21,14 @@ SCHEMA = [
         name="optional_key",
         description="optional_key long description",
         source=dict(argv=["-o", "--optional1"]),
-        key="optional_key"
+        key="optional_key",
+
     ), dict(
         name="absent_key1",
         description="optional_key long description",
         source=dict(argv=["--optional-key"]),
         key="nested.optional_key",
+        nullable=True,
         choices=["value1", "value2"]
     ),
     dict(
@@ -43,6 +42,7 @@ SCHEMA = [
         name="absent_key_default",
         description="optional_key2 long description",
         source=dict(argv=["--optional-key-default"]),
+        default="default",
         key="nested.absent_key_default"
     ),
     dict(
@@ -68,6 +68,7 @@ def test_load_configuration():
     assert config_manager.get('keyone') == "value1"
     assert config_manager.get('key.two') == "value2"
     assert config_manager.get('optional_key') == "value3"
+    assert config_manager.get('nested.absent_key_default') == "default"
     assert config_manager.get('absent_key1') is None
     assert config_manager.get('nested.optional_key') == "value1"
     assert config_manager.get('key_source_omitted') == "value"
