@@ -18,7 +18,7 @@ class Etcd(ConfigHandlerBase):
         super().__init__()
         self.client = Client(**kwargs)
         self.keyspace = keyspace if keyspace else '/config'
-        self._config = self.load()
+        self.config = self.load()
 
     def load(self):
         """
@@ -36,10 +36,10 @@ class Etcd(ConfigHandlerBase):
             Serialize and store the configuration key, values to the Etcd data store.
             :rtype: bool (success)
         """
-        flat_dict = self.flatten(self._config, parent_key=self.keyspace, seperator='/')
+        flat_dict = self.flatten(self.config, parent_key=self.keyspace, seperator='/')
         for key, value in flat_dict.items():
             self.client.set(key, value)
-        self._updated = False
+        self.updated = False
         return True
 
     def destroy(self):

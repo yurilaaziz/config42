@@ -29,7 +29,7 @@ def test_default_handler_destroy():
 def test_default_handler_flush():
     config_manager = config42.ConfigManager()
     assert config_manager.handler.flush()
-    assert config_manager.handler._updated is True
+    assert config_manager.handler.updated is True
 
 
 def test_default_handler_dump():

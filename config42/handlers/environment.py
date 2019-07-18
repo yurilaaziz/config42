@@ -20,4 +20,4 @@ class Environment(Memory):
                     value)
 
         self.in_memory_config = configmanager.as_dict()
-        self._config = self.in_memory_config
+        self.config = self.in_memory_config

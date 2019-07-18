@@ -35,4 +35,4 @@ class ArgParse(Memory):
         configmanager.set_many(vars(args))
 
         self.in_memory_config = configmanager.as_dict()
-        self._config = self.in_memory_config
+        self.config = self.in_memory_config

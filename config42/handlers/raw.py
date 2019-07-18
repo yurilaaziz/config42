@@ -17,7 +17,7 @@ class RawHandler(ConfigHandlerBase):
         else:
             self.root_directory, file = ntpath.split(self.path)
             self.files.append((file, self.path))
-        self._config = self.load()
+        self.config = self.load()
 
     def load(self):
         result = {}
@@ -27,7 +27,14 @@ class RawHandler(ConfigHandlerBase):
         return result
 
     def dump(self):
-        for key, value in self._config.items():
+        for key, value in self.config.items():
             with open(os.path.join(self.root_directory, key), "w") as f:
                 f.write(value)
         return True
+
+    def destroy(self):
+        if os.path.isdir(self.path):
+            import shutil
+            shutil.rmtree(self.path)
+        else:
+            os.remove(self.path)

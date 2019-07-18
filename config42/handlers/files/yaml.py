@@ -9,10 +9,10 @@ from .base import FileHandlerBase
 
 class YamlHandler(FileHandlerBase):
     def load(self):
-        with open(self._path, "r") as f:
+        with open(self.path, "r") as f:
             return yaml.load(f, Loader=yaml.FullLoader)
 
     def dump(self):
-        with open(self._path, "w") as f:
-            yaml.dump(self._config, f)
+        with open(self.path, "w") as f:
+            yaml.dump(self.config, f)
         return True

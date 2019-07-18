@@ -98,14 +98,14 @@ def test_configuration_trigger_commit(sample_config):
     assert sample_config['simple'] == config_manager.get('simple')
 
     config_manager.set('new_key', 'new_value')
-    assert config_manager.handler._updated is False
+    assert config_manager.handler.updated is False
     config_manager.set('new_key2', 'new_value2', trigger_commit=False)
-    assert config_manager.handler._updated is True
+    assert config_manager.handler.updated is True
     config_manager.commit()
-    assert config_manager.handler._updated is False
+    assert config_manager.handler.updated is False
 
     config_manager.set('new_key', 'new_value', trigger_commit=True)
-    assert config_manager.handler._updated is False
+    assert config_manager.handler.updated is False
 
 
 def test_load_empty_config():
@@ -117,14 +117,14 @@ def test_load_and_dump_flush(sample_config):
     config_manager = ConfigManager()
     config_manager.set_many(sample_config, trigger_commit=False)
     assert len(config_manager.handler.load()) == 0
-    assert config_manager.handler._updated is True
+    assert config_manager.handler.updated is True
     config_manager.handler.dump()
-    assert config_manager.handler._updated is False
+    assert config_manager.handler.updated is False
     assert len(config_manager.handler.load()) > 0
 
     config_manager.handler.flush()
     assert len(config_manager.handler.load()) >= 0
-    assert config_manager.handler._updated is True
+    assert config_manager.handler.updated is True
 
     config_manager.handler.destroy()
     assert len(config_manager.handler.load()) == 0
@@ -139,4 +139,4 @@ def test_loop_as_dict(sample_config):
     config_manager = ConfigManager()
     config_manager.set_many(sample_config)
     assert len(config_manager.as_dict()) > 0
-    assert config_manager.as_dict() == config_manager.handler.as_dict()
+    assert config_manager.as_dict() == config_manager.handler.config

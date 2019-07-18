@@ -10,7 +10,7 @@ class Memory(ConfigHandlerBase):
         """
         super().__init__()
         self.in_memory_config = {}
-        self._config = {}
+        self.config = {}
 
     def load(self):
         """
@@ -24,8 +24,8 @@ class Memory(ConfigHandlerBase):
             Affects current configuration .
             :rtype: bool (success)
         """
-        self.in_memory_config = self._config
-        self._updated = False
+        self.in_memory_config = self.config
+        self.updated = False
         return True
 
     def destroy(self):

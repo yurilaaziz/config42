@@ -76,7 +76,7 @@ class ConfigManager:
                 else:
                     handler_obj = self.load_handler(**item)
 
-                new_configuration = handler_obj.as_dict()
+                new_configuration = handler_obj.config
 
                 new_handlers = new_configuration.pop(self.nested_configuration_key, {})
                 handlers.update(new_handlers)
@@ -125,7 +125,7 @@ class ConfigManager:
             :type render: bool
             :rtype: Any supported (str, int, bool, list-of-supported-types)
         """
-        value = self.recursive(key, obj=self.handler.as_dict())
+        value = self.recursive(key, obj=self.handler.config)
         if value is None:
             value = self.get_defaults(key)
         return self.render_recursive(value) if render else value
@@ -143,17 +143,17 @@ class ConfigManager:
             :type trigger_commit: bool
             :rtype: bool (success)
         """
-        obj = self.defaults if default else self.handler._config
+        obj = self.defaults if default else self.handler.config
         if self.recursive(key, obj) == value:
             return False  # Not updating
 
         self.recursive(key, obj, value=value, update=True)
         if not default:
-            self.handler._updated = True
+            self.handler.updated = True
         if trigger_commit:
             self.commit()
 
-        return self.handler._updated
+        return self.handler.updated
 
     def replace(self, config, trigger_commit=True):
         """
@@ -220,7 +220,7 @@ class ConfigManager:
         return self.handler.dump()
 
     def init_app(self, app):
-        return InitApp.init_app(self.handler.as_dict(), app)
+        return InitApp.init_app(self.as_dict(), app)
 
     def as_dict(self):
-        return self.handler.as_dict()
+        return self.handler.config
