@@ -3,7 +3,7 @@ import os
 import pytest
 
 import config42
-from config42.handlers.files import FileHandler
+from config42.handlers import FileHandler
 
 
 def test_default_handler():

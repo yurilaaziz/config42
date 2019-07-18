@@ -43,7 +43,7 @@ class ConfigManager:
     def load_handler(self, handler=None, **kwargs):
         if handler is None:
             if kwargs.get('path'):
-                from config42.handlers.files import FileHandler
+                from config42.handlers import FileHandler
                 handler = FileHandler
             elif kwargs.get('keyspace'):
                 from config42.handlers.etcd import Etcd
