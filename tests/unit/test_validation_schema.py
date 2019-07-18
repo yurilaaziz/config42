@@ -4,7 +4,7 @@ import pytest
 from cerberus import Validator
 
 from config42 import ConfigManager
-from config42.validator import DefaultValidator, DocumentError
+from config42.validator import DefaultValidator, ConfigurationSchemaError, ValidationError
 
 
 def test_validation_schema():
@@ -62,7 +62,7 @@ def test_document_validation():
         "default": "admin",
         "type": "string"}]
     )
-    with pytest.raises(DocumentError):
+    with pytest.raises(ConfigurationSchemaError):
         DefaultValidator([{
             "name": "Super user name",
             "description": "User description",
@@ -114,7 +114,7 @@ def test_validation_with_configmanager():
     config_manager = ConfigManager(schema=schema, defaults=config_sample)
     assert config_manager.get('user.name') == 'user'
 
-    with pytest.raises(DocumentError):
+    with pytest.raises(ValidationError):
         _ = ConfigManager(schema=schema, defaults={})
 
     # Disable validator
@@ -135,7 +135,7 @@ def test_validation_with_nested_configmanager():
     }
     ]
     config_sample = {'user': {'id': 1234}}
-    with pytest.raises(DocumentError):
+    with pytest.raises(ValidationError):
         _ = ConfigManager(schema=schema, defaults=config_sample)
 
     os.environ.update({"BARBEROUSSE_USER_NAME": "user"})
@@ -162,7 +162,8 @@ def test_validation_defaults_configmanager():
         "type": "string"
     }
     ]
-    with pytest.raises(DocumentError):
+
+    with pytest.raises(ValidationError):
         _ = ConfigManager(schema=schema)
 
     config_manager = ConfigManager(schema=schema, defaults={'user': {'name': 'user'}})

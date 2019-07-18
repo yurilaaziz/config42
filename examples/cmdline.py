@@ -1,6 +1,8 @@
+from pprint import pprint
+
 from config42 import ConfigManager
 from config42.handlers.argparse import ArgParse
-from pprint import pprint
+
 schema = [
     dict(
         name="first name",
