@@ -5,8 +5,10 @@ class FileHandler(object):
         """
 
         path = path.lower()
-        if not extension:
+        if not extension and len(path.split('.')) > 1:
             extension = path.split('.')[-1]
+        else:
+            extension = ""
 
         if extension.lower() in ("yaml", "yml"):
             from .yaml import YamlHandler as Handler
@@ -15,6 +17,6 @@ class FileHandler(object):
         elif extension.lower() == "ini":
             from .ini import IniHandler as Handler
         else:
-            raise NotImplementedError("Only yaml, json, ini extensions are supported")
+            from config42.handlers.raw import RawHandler as Handler
 
         return Handler(path=path, **kwargs)
