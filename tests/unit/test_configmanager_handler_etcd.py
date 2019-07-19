@@ -34,14 +34,14 @@ def test_load_and_dump_flush(sample_config):
     config_manager = config42.ConfigManager(handler=Etcd, keyspace='/absent_key_' + uuid1().hex)
     config_manager.set_many(sample_config, trigger_commit=False)
     assert len(config_manager.handler.load()) == 0
-    assert config_manager.handler._updated is True
+    assert config_manager.handler.updated is True
     config_manager.handler.dump()
-    assert config_manager.handler._updated is False
+    assert config_manager.handler.updated is False
     assert len(config_manager.handler.load()) > 0
 
     config_manager.handler.flush()
     assert len(config_manager.handler.load()) >= 0
-    assert config_manager.handler._updated is True
+    assert config_manager.handler.updated is True
 
     config_manager.handler.destroy()
     assert len(config_manager.handler.load()) == 0

@@ -50,16 +50,16 @@ class Etcd(ConfigHandlerBase):
         try:
             self.client.delete(self.keyspace, recursive=True, dir=True)
             return True
-        except KeyError:
+        except EtcdKeyNotFound:
             return False
 
-    def recursive(self, directory, prefix='', seperator='/'):
+    def recursive(self, directory, prefix='', separator='/'):
         items = {}
         for item in directory.leaves:
             if item.dir:
-                items.update(self.recursive(item), prefix=item.key, seperator=seperator)
+                items.update(self.recursive(item), prefix=item.key, seperator=separator)
             else:
-                items[item.key.replace(prefix, '').replace(seperator, '')] = item.value
+                items[item.key.replace(prefix, '').replace(separator, '')] = item.value
         return dict(items)
 
     def flatten(self, dict_, parent_key='', seperator='/'):
