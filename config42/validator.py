@@ -5,10 +5,10 @@ class ValidationError(Exception):
     """ Raised when the value of the configuration variable has the wrong format """
 
     def __init__(self, variable, errors):
-        self.message = "Setting' value of '{}' is invalid : {}".format(variable, str(errors))
+        self.message = "The configuration value of '{}' is invalid : {}".format(variable, str(errors))
 
     def __str__(self):
-        return (repr(self.message))
+        return str(self.message)
 
 
 class ConfigurationSchemaError(Exception):
@@ -18,10 +18,10 @@ class ConfigurationSchemaError(Exception):
         self.messages = ""
         for error in errors:
             for key, value in error.items():
-                self.messages += "Setting' schema #{} is invalid : {}".format(key, value)
+                self.messages += "The configuration schema contains invalid value in #{}: {}".format(key, value)
 
     def __str__(self):
-        return (repr(self.messages))
+        return str(self.messages)
 
 
 class DefaultValidator:
@@ -33,7 +33,9 @@ class DefaultValidator:
         "source": {'type': 'dict',
                    'schema': {
                        'argv': {'type': 'list',
-                                'required': False}
+                                'required': False},
+                       'argv_options': {'type': 'dict',
+                                        'required': False}
                    }},
         "required": {'type': 'boolean'},
         "nullable": {'type': 'boolean'},
@@ -67,4 +69,9 @@ class DefaultValidator:
             _schema['allowed'] = item['choices']
         if item.get('type', None):
             _schema['type'] = item['type']
+        if item.get('required', None):
+            _schema['required'] = item['required']
+
+        if not _schema['required']:
+            _schema['nullable'] = True
         return {'value': _schema}

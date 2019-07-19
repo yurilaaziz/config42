@@ -11,24 +11,27 @@ class ArgParse(Memory):
             Retrieve parameters from command line arguments
         """
         super().__init__()
-        # Validate with cerberus
-        # validator = Validate(schema) :
 
         parser = argparse.ArgumentParser(**argparge_kwargs)
 
         for item in schema:
-            flags_name = item.get('source', {}).get('argv', ['--' + item['key']])
+            flags_name = item.get('source', {}).get('argv', ['--' + item['key'].replace('.', '-')])
+            argv_options = item.get('source', {}).get('argv_options', {})
             if flags_name:
-                parser.add_argument(*flags_name,
-                                    type={'string': str,
-                                          'integer': int,
-                                          'float': float,
-                                          'boolean': bool
-                                          }.get(item.get('type'), str),
-                                    choices=item.get('choices'),
-                                    help=item.get('description'),
-                                    metavar=item.get('name'),
-                                    dest=item.get('key'))
+                options = dict(choices=item.get('choices'),
+                               help=item.get('description'),
+                               dest=item.get('key'),
+                               type={'string': str,
+                                     'integer': int,
+                                     'float': float,
+                                     'boolean': bool
+                                     }.get(item.get('type'), str),
+                               )
+                if not item.get('choices'):
+                    options['metavar'] = item.get('name')
+                if argv_options:
+                    options.update(argv_options)
+                parser.add_argument(*flags_name, **options)
 
         args = parser.parse_args(argv)
         configmanager = ConfigManager()
