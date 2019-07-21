@@ -12,23 +12,22 @@ ACTION_DESTROY = "destroy"
 
 schema = [
     dict(
-        name="Main configuration ",
+        name="Main configuration",
         key="configuration",
         source=dict(argv=["-c"]),
-        description="configuration file to manipulate, or handler type (etcd, raw)",
+        description="configuration file or handler type like (etcd, raw) to manipulate",
         required=False
     ), dict(
-        name="Exported configuration",
+        name="Import configuration",
         key="from_configuration",
         source=dict(argv=["-f", "--from"]),
-        description="Configuration file where additional configuration could be read"
-                    " or handler type (etcd, raw).",
+        description="Import from configuration file or handler type (etcd, raw)",
         required=False,
     ), dict(
         name="Output format",
         key="output_format",
         source=dict(argv=["-o"]),
-        description="Output format",
+        description="Export format",
         choices=["yaml", "json"],
         default="yaml",
         required=False,
@@ -37,26 +36,26 @@ schema = [
         key="action",
         source=dict(argv=["-a", "--action"]),
         choices=[ACTION_APPLY, ACTION_MERGE, ACTION_READ, ACTION_DESTROY],
-        description="action to apply",
+        description="Action to apply",
         required=False
     ), dict(
         name="Etcd host",
         key="etcd.host",
-        description="ETCD Host",
+        description="Specify the ETCD Host",
         type="string",
         required=False
 
     ), dict(
         name="Etcd port",
         key="etcd.port",
-        description="ETCD server port ",
+        description="Specify the ETCD server port ",
         type="string",
         required=False
 
     ), dict(
         name="Etcd Keyspace",
         key="etcd.keyspace",
-        description="ETCD keyspace where configuration will be stored, ie : /config ",
+        description="Specify the ETCD keyspace where configuration is stored, ie : /config",
         default="/config",
         type="string",
         required=False
@@ -64,7 +63,7 @@ schema = [
     ), dict(
         name="Raw directory",
         key="raw.path",
-        description="Directory each element will be stored in a separate file  ",
+        description="Specify a directory path where configuration is stored in a separate raw files",
         type="string",
         required=False
 
@@ -83,21 +82,18 @@ config = None
 
 
 def read_from_configuration(configuration):
-    parsed_config = {}
-    if configuration in ('etcd', 'raw'):
-        config_manager = ConfigManager(**config.get(configuration))
-        parsed_config = config_manager.as_dict()
-    elif configuration in ('yaml', 'json'):
+    if configuration in ('yaml', 'json'):
         import sys
         content = sys.stdin.read()
         if configuration == 'yaml':
-            parsed_config = yaml.load(content)
+            parsed_config = yaml.load(content, Loader=yaml.FullLoader)
         elif configuration == 'json':
             parsed_config = json.loads(content)
-    elif configuration:
-        config_manager = ConfigManager(path=configuration)
+    else:
+        config_manager = load_configmanager(configuration)
         parsed_config = config_manager.as_dict()
-    elif config.get('literals'):
+
+    if config.get('literals'):
         for literal in config.get('literals'):
             key, value = literal.split('=', 1)
             parsed_config[key] = value
@@ -105,54 +101,42 @@ def read_from_configuration(configuration):
     return parsed_config
 
 
-def update_config(action, config_input, parsed_config):
-    if config_input in ('etcd', 'raw'):
-        config_manager = ConfigManager(**config.get(config_input))
-    else:
-        config_manager = ConfigManager(path=config_input)
-        # Erase data store before
-    if action in (ACTION_APPLY, ACTION_DESTROY):
-        config_manager.handler.flush()
-        config_manager.handler.destroy()
-        print("destroyed")
-    # update a configuration
-    if action in (ACTION_APPLY, ACTION_MERGE):
-        config_manager.set_many(parsed_config)
-        config_manager.commit()
-    print("{}/configuration has been updated, {}".format(config_input.capitalize(), config.get(config_input)))
-
-
 def load_configmanager(configuration):
-    if configuration in ('etcd', 'raw'):
-        config_manager = ConfigManager(**config.get(configuration))
+    if configuration == 'etcd':
+        from config42.handlers.etcd import Etcd
+        return ConfigManager(handler=Etcd, **config.get(configuration))
+
+    elif configuration == 'raw':
+        from config42.handlers.raw import RawHandler
+        return ConfigManager(handler=RawHandler, **config.get(configuration))
+
     else:
-        config_manager = ConfigManager(path=configuration)
-    return config_manager
+        return ConfigManager(path=configuration)
 
 
 def main():
     global config
     try:
         config = ConfigManager(handler=ArgParse, schema=schema, prog="config42")
-        print(config.as_dict())
-
         configuration = config.get('configuration')
         from_configuration = config.get('from_configuration')
-
         action = config.get('action')
+
         if not action:
-            if configuration and not from_configuration and not config.get('literals'):
-                action = ACTION_READ
-            else:
+            if configuration and (from_configuration or config.get('literals')):
                 action = ACTION_MERGE
+            elif not configuration and not from_configuration and not config.get('literals'):
+                config.handler.parser.print_help()
+                raise SystemExit
+            else:
+                action = ACTION_READ
 
         if action == ACTION_READ:
             parsed_config = read_from_configuration(configuration)
-            output_format = config.get('output_format')
-            if output_format == 'json':
+            if config.get('output_format') == 'json':
                 print(json.dumps(parsed_config, indent=2))
-            elif output_format == 'yaml':
-                print(json.dumps(parsed_config, indent=2))
+            else:
+                print(yaml.dump(parsed_config))
         else:
             config_manager = load_configmanager(configuration)
             if action == ACTION_DESTROY:
@@ -161,13 +145,11 @@ def main():
                                                                        config.get(configuration)))
             elif action == ACTION_APPLY:
                 parsed_config = read_from_configuration(from_configuration)
-                config_manager.handler.flush()
                 config_manager.handler.destroy()
-                config_manager.set_many(parsed_config)
+                config_manager.replace(parsed_config)
                 config_manager.commit()
                 print("{}/ previous configuration has been flushed, {}".format(configuration.capitalize(),
                                                                                config.get(configuration)))
-
             elif action in ACTION_MERGE:
                 # update a configuration
                 parsed_config = read_from_configuration(from_configuration)
@@ -175,10 +157,12 @@ def main():
                 config_manager.commit()
                 print("{}/configuration has been updated, {}".format(configuration.capitalize(),
                                                                      config.get(configuration)))
-
+    except SystemExit:
+        exit(1)
+    except KeyboardInterrupt:
+        exit(127)
     except Exception as exc:
-        raise exc
-        print(exc)
+        # TODO Log exception with logging, add Flag -v for verbosity
         exit(1)
 
 
