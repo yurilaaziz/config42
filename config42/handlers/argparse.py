@@ -12,7 +12,7 @@ class ArgParse(Memory):
         """
         super().__init__()
 
-        parser = argparse.ArgumentParser(**argparge_kwargs)
+        self.parser = argparse.ArgumentParser(**argparge_kwargs)
 
         for item in schema:
             flags_name = item.get('source', {}).get('argv', ['--' + item['key'].replace('.', '-')])
@@ -31,9 +31,9 @@ class ArgParse(Memory):
                     options['metavar'] = item.get('name')
                 if argv_options:
                     options.update(argv_options)
-                parser.add_argument(*flags_name, **options)
+                self.parser.add_argument(*flags_name, **options)
 
-        args = parser.parse_args(argv)
+        args = self.parser.parse_args(argv)
         configmanager = ConfigManager()
         configmanager.set_many(vars(args))
 
