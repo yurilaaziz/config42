@@ -1,7 +1,8 @@
 from config42.handlers import ConfigHandlerBase
+from config42.utils import flatten, recursive
 
 try:
-    from etcd import Client, EtcdKeyNotFound
+    from etcd import Client, EtcdKeyNotFound, EtcdNotDir
 except ImportError:
     raise ImportError("Please install python-etcd package")
 
@@ -18,6 +19,8 @@ class Etcd(ConfigHandlerBase):
         super().__init__()
         self.client = Client(**kwargs)
         self.keyspace = keyspace if keyspace else '/config'
+        if not self.keyspace.startswith('/'):
+            self.keyspace = '/' + self.keyspace
         self.config = self.load()
 
     def load(self):
@@ -27,7 +30,11 @@ class Etcd(ConfigHandlerBase):
         """
         try:
             directory = self.client.read(self.keyspace, recursive=True)
-            return self.recursive(directory, prefix=self.keyspace)
+            items = {}
+            for item in directory.leaves:
+                recursive(item.key.replace(self.keyspace + '/', '').replace('/', '.'), items, item.value,
+                          update=True)
+            return items
         except EtcdKeyNotFound:
             return {}
 
@@ -36,9 +43,14 @@ class Etcd(ConfigHandlerBase):
             Serialize and store the configuration key, values to the Etcd data store.
             :rtype: bool (success)
         """
-        flat_dict = self.flatten(self.config, parent_key=self.keyspace, seperator='/')
+        flat_dict = flatten(self.config, parent_key=self.keyspace, separator='/')
         for key, value in flat_dict.items():
-            self.client.set(key, value)
+            try:
+                self.client.set(key, value)
+            except EtcdNotDir as exc:
+                directory_not_created = exc.payload['cause']
+                self.client.write(directory_not_created, None, dir=True)
+                self.client.set(key, value)
         self.updated = False
         return True
 
@@ -52,22 +64,3 @@ class Etcd(ConfigHandlerBase):
             return True
         except EtcdKeyNotFound:
             return False
-
-    def recursive(self, directory, prefix='', separator='/'):
-        items = {}
-        for item in directory.leaves:
-            if item.dir:
-                items.update(self.recursive(item), prefix=item.key, seperator=separator)
-            else:
-                items[item.key.replace(prefix, '').replace(separator, '')] = item.value
-        return dict(items)
-
-    def flatten(self, dict_, parent_key='', seperator='/'):
-        items = []
-        for key, value in dict_.items():
-            new_key = (parent_key + seperator + key) if parent_key else key
-            if isinstance(value, dict):
-                items.extend(self.flatten(value, parent_key=new_key, seperator=seperator).items())
-            else:
-                items.append((new_key, value))
-        return dict(items)

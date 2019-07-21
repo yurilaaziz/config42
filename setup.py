@@ -27,6 +27,7 @@ setup(
     download_url="https://github.com/yurilaaziz/config42/releases/tag/0.2",
     keywords="Pretty configuration manager, Key value data store, cloud native configuration",
     install_requires=required,
+    entry_points={"console_scripts": ["config42 = config42.__main__:main"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
