@@ -18,8 +18,6 @@ def test_help_prompt(script_runner):
     # assert that config42 is the program name
     assert "usage: config42" in ret.stdout
     assert "usage: config42" in ret2.stdout
-    assert ret.stderr == ''
-    assert ret2.stderr == ''
 
 
 def test_literals_yaml_stdout(script_runner):
@@ -29,7 +27,6 @@ def test_literals_yaml_stdout(script_runner):
     assert "key: value" in ret.stdout
     assert "nested.key: value" in ret.stdout
     _ = yaml.load(ret.stdout, Loader=yaml.FullLoader)
-    assert ret.stderr == ''
 
 
 def test_literals_json_stdout(script_runner):
@@ -39,7 +36,6 @@ def test_literals_json_stdout(script_runner):
     content = json.loads(ret.stdout)
     assert content.get('key') == 'value'
     assert content.get('nested.key') == 'value'
-    assert ret.stderr == ''
 
 
 def test_literals_yaml_file(script_runner, tmp_path):
@@ -49,7 +45,6 @@ def test_literals_yaml_file(script_runner, tmp_path):
     content = yaml.load(open(output_yaml))
     assert content.get('key') == 'value'
     assert content.get('nested').get('key') == 'value'
-    assert ret.stderr == ''
 
 
 def test_literals_json_file(script_runner, tmp_path):
@@ -59,7 +54,6 @@ def test_literals_json_file(script_runner, tmp_path):
     content = json.load(open(output_json))
     assert content.get('key') == 'value'
     assert content.get('nested').get('key') == 'value'
-    assert ret.stderr == ''
 
 
 def test_literals_etcd(script_runner):
@@ -71,7 +65,6 @@ def test_literals_etcd(script_runner):
     assert config_manager.get('key') == 'value'
     assert config_manager.get('nested').get('key') == 'value'
     assert config_manager.get('nested.key') == 'value'
-    assert ret.stderr == ''
 
 
 def test_apply_literals(script_runner):
@@ -83,7 +76,6 @@ def test_apply_literals(script_runner):
     assert config_manager.get('key') == 'value2'
     assert config_manager.get('key2') is None
     assert len(config_manager.as_dict()) == 1
-    assert ret.stderr == ''
 
 
 def test_apply_raw(script_runner, tmp_path):
@@ -98,7 +90,6 @@ def test_apply_raw(script_runner, tmp_path):
     assert config_manager.get('key') == 'value2'
     assert config_manager.get('key2') is None
     assert len(config_manager.as_dict()) == 1
-    assert ret.stderr == ''
 
 
 def test_actions(script_runner, tmp_path):
@@ -119,3 +110,11 @@ def test_actions(script_runner, tmp_path):
     assert ret.success
     ret = script_runner.run('config42', *args('-a read -l key=value -c ' + file))
     assert ret.success
+
+
+def test_logging_to_stderr(script_runner):
+    keyspace = '/' + str(uuid4())
+    ret = script_runner.run('config42', *args('-l key=value key2=value -c etcd --etcd-keyspace ' + keyspace))
+    assert len(ret.stderr) == 0  # No log
+    ret = script_runner.run('config42', *args('-l key=value key2=value -c etcd --etcd-keyspace -v' + keyspace))
+    assert len(ret.stderr)  # with log

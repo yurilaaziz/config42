@@ -1,4 +1,5 @@
 import json
+import logging
 
 import yaml
 
@@ -75,6 +76,13 @@ schema = [
         type="list",
         required=False
 
+    ), dict(
+        name="Verbosity",
+        key="verbosity",
+        source=dict(argv=['-v'], argv_options=dict(action='count')),
+        description="Specify a key and literal value to insert in the configuration (i.e. mykey=somevalue)",
+        required=False
+
     )
 ]
 
@@ -118,6 +126,15 @@ def main():
     global config
     try:
         config = ConfigManager(handler=ArgParse, schema=schema, prog="config42")
+        if not config.get('verbosity'):
+            level = 100  # Disbaled
+        elif config.get('verbosity') == 1:
+            level = logging.INFO
+        else:
+            level = logging.DEBUG
+
+        logging.basicConfig(level=level, format="[%(name)s/%(levelname)s] - %(message)s")
+
         configuration = config.get('configuration')
         from_configuration = config.get('from_configuration')
         action = config.get('action')
@@ -141,28 +158,28 @@ def main():
             config_manager = load_configmanager(configuration)
             if action == ACTION_DESTROY:
                 config_manager.handler.destroy()
-                print("{}/configuration has been destroyed, {}".format(configuration.capitalize(),
-                                                                       config.get(configuration)))
+                logging.info("{}/configuration has been destroyed, {}".format(configuration.capitalize(),
+                                                                              config.get(configuration)))
             elif action == ACTION_APPLY:
                 parsed_config = read_from_configuration(from_configuration)
                 config_manager.handler.destroy()
                 config_manager.replace(parsed_config)
                 config_manager.commit()
-                print("{}/ previous configuration has been flushed, {}".format(configuration.capitalize(),
-                                                                               config.get(configuration)))
+                logging.info("{}/ previous configuration has been flushed, {}".format(configuration.capitalize(),
+                                                                                      config.get(configuration)))
             elif action in ACTION_MERGE:
                 # update a configuration
                 parsed_config = read_from_configuration(from_configuration)
                 config_manager.set_many(parsed_config)
                 config_manager.commit()
-                print("{}/configuration has been updated, {}".format(configuration.capitalize(),
-                                                                     config.get(configuration)))
+                logging.info("{}/configuration has been updated, {}".format(configuration.capitalize(),
+                                                                            config.get(configuration)))
     except SystemExit:
         exit(1)
     except KeyboardInterrupt:
         exit(127)
     except Exception as exc:
-        # TODO Log exception with logging, add Flag -v for verbosity
+        logging.exception(exc)
         exit(1)
 
 

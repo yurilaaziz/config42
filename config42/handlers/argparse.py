@@ -18,16 +18,18 @@ class ArgParse(Memory):
             flags_name = item.get('source', {}).get('argv', ['--' + item['key'].replace('.', '-')])
             argv_options = item.get('source', {}).get('argv_options', {})
             if flags_name:
-                options = dict(choices=item.get('choices'),
-                               help=item.get('description'),
-                               dest=item.get('key'),
-                               type={'string': str,
-                                     'integer': int,
-                                     'float': float,
-                                     'boolean': bool
-                                     }.get(item.get('type'), str),
+                options = dict(help=item.get('description'),
+                               dest=item.get('key')
                                )
-                if not item.get('choices'):
+                if item.get('type'):
+                    options['type'] = {'string': str,
+                                       'integer': int,
+                                       'float': float,
+                                       'boolean': bool
+                                       }.get(item.get('type'), str)
+                if item.get('choices'):
+                    options['choices'] = item.get('choices')
+                elif not argv_options.get("action", '') == 'count':
                     options['metavar'] = item.get('name')
                 if argv_options:
                     options.update(argv_options)
