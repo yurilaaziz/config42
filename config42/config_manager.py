@@ -5,6 +5,7 @@ from jinja2 import Environment, BaseLoader
 
 from config42.handlers.memory import Memory
 from config42.init_apps import InitApp
+from config42.utils import recursive
 from config42.validator import DefaultValidator
 
 
@@ -84,36 +85,11 @@ class ConfigManager:
         self.set_many({self.nested_configuration_key: nested})
 
     def get_defaults(self, key):
-        return self.recursive(key, obj=self.defaults)
+        return self.operate(key, obj=self.defaults)
 
-    def recursive(self, key, obj, value=None, update=False):
-        _keys = key.split('.')
-        assert len(_keys) > 0
-
-        if isinstance(obj, list):
-            _base = int(_keys[0])
-        else:
-            _base = _keys[0]
-
-        if isinstance(obj, dict) and _base not in obj and not update:
-            return None
-        if isinstance(obj, list) and _base >= len(obj) and not update:
-            return None
-        elif isinstance(obj, list) and update:
-            raise AttributeError("Insertion in list is not allowed")
-
-        if isinstance(obj, str) and _base and not update:
-            raise AttributeError("Cannot get {}' key from string.")
-
-        if len(_keys) == 1:
-            if update:
-                obj[_base] = value
-            return obj[_base]
-        else:
-            if isinstance(obj, dict) and _base not in obj:
-                obj[_base] = dict()
-
-            return self.recursive('.'.join(_keys[1:]), obj[_base], value, update)
+    def operate(self, *args, **kwargs):
+        # TODO: rework recursive operation
+        return recursive(*args, **kwargs)
 
     def get(self, key, render=True):
         """
@@ -125,7 +101,7 @@ class ConfigManager:
             :type render: bool
             :rtype: Any supported (str, int, bool, list-of-supported-types)
         """
-        value = self.recursive(key, obj=self.handler.config)
+        value = self.operate(key, obj=self.handler.config)
         if value is None:
             value = self.get_defaults(key)
         return self.render_recursive(value) if render else value
@@ -144,10 +120,10 @@ class ConfigManager:
             :rtype: bool (success)
         """
         obj = self.defaults if default else self.handler.config
-        if self.recursive(key, obj) == value:
+        if self.operate(key, obj) == value:
             return False  # Not updating
 
-        self.recursive(key, obj, value=value, update=True)
+        self.operate(key, obj, value=value, update=True)
         if not default:
             self.handler.updated = True
         if trigger_commit:

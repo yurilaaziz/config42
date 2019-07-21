@@ -90,6 +90,13 @@ def test_configuration_replace(default_config, sample_config):
     assert default_config['defaultkey1'] == config_manager.get('defaultkey1')
 
 
+def test_nested_key():
+    config_manager = ConfigManager()
+    config_manager.set('key1.key2', 'value')
+    assert config_manager.handler.config.get('key1') is not None
+    assert config_manager.handler.config.get('key1').get('key2') == 'value'
+
+
 def test_configuration_trigger_commit(sample_config):
     config_manager = ConfigManager()
 
