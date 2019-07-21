@@ -35,6 +35,11 @@ class RawHandler(ConfigHandlerBase):
     def destroy(self):
         if os.path.isdir(self.path):
             import shutil
-            shutil.rmtree(self.path)
+
+            for root, dirs, files in os.walk(self.path):
+                for dir in dirs:
+                    shutil.rmtree(os.path.join(root, dir))
+                for file in files:
+                    os.remove(os.path.join(root, file))
         else:
             os.remove(self.path)

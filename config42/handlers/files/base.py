@@ -18,5 +18,8 @@ class FileHandlerBase(ConfigHandlerBase):
             remove persistent configuration file.
             :rtype: bool (success)
         """
-        os.remove(self.path)
-        return True
+        try:
+            os.remove(self.path)
+            return True
+        except FileNotFoundError:
+            return False
