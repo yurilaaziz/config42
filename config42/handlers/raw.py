@@ -29,7 +29,7 @@ class RawHandler(ConfigHandlerBase):
     def dump(self):
         for key, value in self.config.items():
             with open(os.path.join(self.root_directory, key), "w") as f:
-                f.write(value)
+                f.write(str(value))
         return True
 
     def destroy(self):
