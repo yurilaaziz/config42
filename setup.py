@@ -15,7 +15,7 @@ except IOError:
 setup(
     name="config42",
     packages=find_packages(),
-    version="0.3.2",
+    version="0.4.0",
     license="GPLv3+",
     description="Configuration manager for cloud native application, support configuration stored"
                 " in memory, in files, in databases",
