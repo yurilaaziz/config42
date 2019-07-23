@@ -1,8 +1,10 @@
+import inspect
 import logging
 from importlib import import_module
 
 from jinja2 import Environment, BaseLoader
 
+from config42.handlers.base import ConfigHandlerBase
 from config42.handlers.memory import Memory
 from config42.init_apps import InitApp
 from config42.utils import recursive
@@ -68,14 +70,15 @@ class ConfigManager:
             name, item = handlers.popitem()
             if name not in nested:
                 nested[name] = item
-                handler_name = item.pop('handler', None)
-
-                if handler_name:
-                    handler_package = handler_name.split(':')[0]
-                    handler_class = handler_name.split(':')[1]
-                    handler_obj = getattr(import_module(handler_package), handler_class)(**item)
-                else:
+                handler = item.pop('handler', None)
+                if not handler:
                     handler_obj = self.load_handler(**item)
+                elif isinstance(handler, str):
+                    handler_package = handler.split(':')[0]
+                    handler_class = handler.split(':')[1]
+                    handler_obj = getattr(import_module(handler_package), handler_class)(**item)
+                elif inspect.isclass(handler) and issubclass(handler, ConfigHandlerBase):
+                    handler_obj = self.load_handler(handler=handler, **item)
 
                 new_configuration = handler_obj.config
 
@@ -121,13 +124,16 @@ class ConfigManager:
         """
         obj = self.defaults if default else self.handler.config
         if self.operate(key, obj) == value:
+            self.logger.debug("`{}` is already set to `{}`".format(key, value))
             return False  # Not updating
 
         self.operate(key, obj, value=value, update=True)
+        self.logger.debug("`{}{}` is updated to `{}`".format("default/" if default else "", key, value))
         if not default:
             self.handler.updated = True
         if trigger_commit:
             self.commit()
+            self.logger.debug("commit is triggered")
 
         return self.handler.updated
 

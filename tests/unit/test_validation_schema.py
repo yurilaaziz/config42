@@ -159,7 +159,6 @@ def test_validation_defaults_configmanager():
     }, {
         "name": "user name ",
         "key": "user.name",
-        "type": "string"
     }
     ]
 
@@ -169,3 +168,20 @@ def test_validation_defaults_configmanager():
     config_manager = ConfigManager(schema=schema, defaults={'user': {'name': 'user'}})
     assert config_manager.get('user.name') == 'user'
     assert config_manager.get('user.id') == 1234
+
+
+def test_validation_casting():
+    schema = [{
+        "name": "user id ",
+        "key": "user.id",
+        "type": "integer",
+    }, {
+        "name": "user code ",
+        "key": "user.code",
+        "type": "string"
+    }
+    ]
+
+    config_manager = ConfigManager(schema=schema, defaults={'user': {'id': '12345', 'code': 12345}})
+    assert config_manager.get('user.code') == '12345'
+    assert config_manager.get('user.id') == 12345

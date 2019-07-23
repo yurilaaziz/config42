@@ -1,7 +1,7 @@
 import argparse
 
-from config42 import ConfigManager
 from config42.handlers.memory import Memory
+from config42.utils import recursive, builtin_types
 
 
 class ArgParse(Memory):
@@ -21,12 +21,8 @@ class ArgParse(Memory):
                 options = dict(help=item.get('description'),
                                dest=item.get('key')
                                )
-                if item.get('type'):
-                    options['type'] = {'string': str,
-                                       'integer': int,
-                                       'float': float,
-                                       'boolean': bool
-                                       }.get(item.get('type'), str)
+                if item.get('type') in ('string', 'integer', 'float'):
+                    options['type'] = builtin_types.get(item.get('type'), str)
                 if item.get('choices'):
                     options['choices'] = item.get('choices')
                 elif not argv_options.get("action", '') == 'count':
@@ -36,8 +32,9 @@ class ArgParse(Memory):
                 self.parser.add_argument(*flags_name, **options)
 
         args = self.parser.parse_args(argv)
-        configmanager = ConfigManager()
-        configmanager.set_many(vars(args))
-
-        self.in_memory_config = configmanager.as_dict()
+        self.in_memory_config = {}
+        for key, value in vars(args).items():
+            if value is not None:
+                recursive(key, self.in_memory_config, value,
+                          update=True)
         self.config = self.in_memory_config

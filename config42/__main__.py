@@ -44,14 +44,16 @@ schema = [
         key="etcd.host",
         description="Specify the ETCD Host",
         type="string",
-        required=False
+        required=False,
+        default='127.0.0.1',
 
     ), dict(
         name="Etcd port",
         key="etcd.port",
         description="Specify the ETCD server port ",
-        type="string",
-        required=False
+        type="integer",
+        required=False,
+        default=4001,
 
     ), dict(
         name="Etcd Keyspace",
@@ -80,7 +82,7 @@ schema = [
         name="Verbosity",
         key="verbosity",
         source=dict(argv=['-v'], argv_options=dict(action='count')),
-        description="Specify a key and literal value to insert in the configuration (i.e. mykey=somevalue)",
+        description="verbosity level -v = INFO, -vv == DEBUG",
         required=False
 
     )

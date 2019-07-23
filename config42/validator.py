@@ -1,5 +1,7 @@
 from cerberus import Validator
 
+from config42.utils import builtin_types
+
 
 class ValidationError(Exception):
     """ Raised when the value of the configuration variable has the wrong format """
@@ -54,11 +56,17 @@ class DefaultValidator:
             raise ConfigurationSchemaError(validator.errors['document'])
 
     def validate(self, config_manager):
-
         for item in self.config_schema:
             validator = Validator(self.cerberus_schema_helper(item))
-            if not validator.validate(
-                    {'value': config_manager.get(item.get('key'))}):
+            value = config_manager.get(item.get('key'))
+            if value and not isinstance(value, builtin_types.get(item.get('type'), str)):
+                try:
+                    value = builtin_types.get(item.get('type'), str)(value)
+                    config_manager.set(item.get('key'), value)
+                except (TypeError, ValueError):
+                    pass
+
+            if not validator.validate({'value': value}):
                 raise ValidationError(item['name'], validator.errors['value'])
 
     def cerberus_schema_helper(self, item):

@@ -1,4 +1,4 @@
-from config42.handlers import ConfigHandlerBase
+from config42.handlers.base import ConfigHandlerBase
 
 
 class Memory(ConfigHandlerBase):

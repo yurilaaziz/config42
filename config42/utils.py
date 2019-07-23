@@ -1,3 +1,13 @@
+builtin_types = {'string': str,
+                 'integer': int,
+                 'float': float,
+                 'boolean': bool,
+                 'dict': dict,
+                 'list': list,
+                 'set': set
+                 }
+
+
 def recursive(key, obj, value=None, update=False):
     _keys = key.split('.')
     assert len(_keys) > 0
