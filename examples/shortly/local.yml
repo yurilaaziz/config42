@@ -1,0 +1,7 @@
+port: 5001
+hostname: localhost
+redis:
+  host: 127.0.0.1
+  port: 6379
+
+

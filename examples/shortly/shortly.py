@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """
     shortly
     ~~~~~~~
@@ -8,20 +10,100 @@
     :copyright: 2007 Pallets
     :license: BSD-3-Clause
 """
+import logging
 import os
+from collections import OrderedDict
 
 import redis
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import NotFound
-from werkzeug.middleware.shared_data import SharedDataMiddleware
 from werkzeug.routing import Map
 from werkzeug.routing import Rule
 from werkzeug.urls import url_parse
 from werkzeug.utils import redirect
 from werkzeug.wrappers import Request
 from werkzeug.wrappers import Response
+from werkzeug.wsgi import SharedDataMiddleware
+
+from config42 import ConfigManager
+from config42.handlers import ArgParse
+
+schema = [
+    dict(
+        name="Hostname",
+        key="hostname",
+        source=dict(argv=["-s"]),
+        description="HTTP Server Binding Hostname",
+        required=False,
+        default="localhost"
+    ), dict(
+        name="Application Port",
+        key="port",
+        type="integer",
+        source=dict(argv=["-p"]),
+        default=5000,
+        description="HTTP Server biding port",
+        required=False
+    ), dict(
+        name="Redis host",
+        key="redis.host",
+        source=dict(argv=["--redis-host"]),
+        description="Redis host",
+        required=True,
+        default="localhost"
+    ), dict(
+        name="Redis Port",
+        key="redis.port",
+        default=6379,
+        type="integer",
+        source=dict(argv=["--redis-port"]),
+        description="Redis Port",
+        required=False
+    ), dict(
+        name="Backround color",
+        key="color",
+        description="Color",
+        choices=["white", "darkmagenta", "orange", "black",
+                 "yellow", "green", "white", "blue", "red"],
+        required=False,
+        default="white"
+    ), dict(
+        name="Verbosity",
+        key="verbosity",
+        source=dict(argv=['-v'], argv_options=dict(action='count')),
+        description="verbosity level -v = INFO, -vv == DEBUG",
+        required=False
+
+    ), dict(
+        name="configuration file",
+        key="config42.configuration.path",
+        source=dict(argv=['-c']),
+        description="Configuration file ",
+        required=False
+
+    )
+]
+
+config = ConfigManager(schema=schema,
+                       defaults={'config42': OrderedDict(
+                           [
+                               ('argv', dict(handler=ArgParse, schema=schema)),
+                               ('env', {'prefix': 'C42'}),
+                               ('file', {'path': 'local.yml'}),
+                           ]
+                       )
+                       })
+
+if not config.get('verbosity'):
+    level = 100  # Disbaled
+elif config.get('verbosity') == 1:
+    level = logging.INFO
+else:
+    level = logging.DEBUG
+
+logging.basicConfig(level=level, format="[%(name)s/%(levelname)s] - %(message)s")
 
 
 def base36_encode(number):
@@ -45,14 +127,14 @@ def get_hostname(url):
 
 
 class Shortly(object):
-    def __init__(self, config):
-        self.redis = redis.Redis(config["redis_host"], config["redis_port"])
+    def __init__(self):
+        self.redis = redis.Redis(**config.get('redis'))
         template_path = os.path.join(os.path.dirname(__file__), "templates")
         self.jinja_env = Environment(
             loader=FileSystemLoader(template_path), autoescape=True
         )
         self.jinja_env.filters["hostname"] = get_hostname
-
+        self.jinja_env.globals['stytle_background'] = config.get('color')
         self.url_map = Map(
             [
                 Rule("/", endpoint="new_url"),
@@ -130,8 +212,8 @@ class Shortly(object):
         return self.wsgi_app(environ, start_response)
 
 
-def create_app(redis_host="localhost", redis_port=6379, with_static=True):
-    app = Shortly({"redis_host": redis_host, "redis_port": redis_port})
+def create_app(with_static=True):
+    app = Shortly()
     if with_static:
         app.wsgi_app = SharedDataMiddleware(
             app.wsgi_app, {"/static": os.path.join(os.path.dirname(__file__), "static")}
@@ -143,4 +225,4 @@ if __name__ == "__main__":
     from werkzeug.serving import run_simple
 
     app = create_app()
-    run_simple("127.0.0.1", 5000, app, use_debugger=True, use_reloader=True)
+    run_simple(config.get('hostname'), config.get('port'), app, use_debugger=True, use_reloader=True)
