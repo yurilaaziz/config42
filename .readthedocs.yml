@@ -1,0 +1,10 @@
+version: 2
+sphinx:
+  configuration: docs/conf.py
+formats: all
+python:
+  version: 3.6
+  install:
+    - requirements: requirements/base.txt
+    - requirements: requirements/misc-deps.txt
+    - requirements: docs/requirements.txt
