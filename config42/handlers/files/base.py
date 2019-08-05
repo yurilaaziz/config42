@@ -4,7 +4,7 @@ from config42.handlers import ConfigHandlerBase
 
 
 class FileHandlerBase(ConfigHandlerBase):
-    def __init__(self, *, path):
+    def __init__(self, path, **kwargs):
         super().__init__()
         self.path = path
         try:

@@ -13,6 +13,16 @@ class ValidationError(Exception):
         return str(self.message)
 
 
+class ValueTypeError(Exception):
+    """ Raised when the value of the configuration variable has the wrong type"""
+
+    def __init__(self, variable, expected_type):
+        self.message = "The configuration value of '{}' is invalid : Type expected {}".format(variable, expected_type)
+
+    def __str__(self):
+        return self.message
+
+
 class ConfigurationSchemaError(Exception):
     """ Raised when the value of the configuration schema has the wrong format """
 
@@ -59,12 +69,14 @@ class DefaultValidator:
         for item in self.config_schema:
             validator = Validator(self.cerberus_schema_helper(item))
             value = config_manager.get(item.get('key'))
-            if value and not isinstance(value, builtin_types.get(item.get('type'), str)):
+            key_type = item.get('type')
+            if value and key_type and not isinstance(value, builtin_types.get(key_type)):
                 try:
                     value = builtin_types.get(item.get('type'), str)(value)
                     config_manager.set(item.get('key'), value)
                 except (TypeError, ValueError):
-                    pass
+
+                    raise ValueTypeError(value, key_type)
 
             if not validator.validate({'value': value}):
                 raise ValidationError(item['name'], validator.errors['value'])
