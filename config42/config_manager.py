@@ -206,3 +206,24 @@ class ConfigManager:
 
     def as_dict(self):
         return self.handler.config
+
+    def __getattr__(self, name):
+        """Look up a setting value."""
+        return self.get(name)
+
+    def __getitem__(self, key):
+        """Look up a setting value."""
+        return getattr(self, key)
+
+    def __contains__(self, key):
+        """Return True if key is the name of a registered setting."""
+        return key in self.handler.config
+
+    def __iter__(self):
+        """Iterate over all registered settings."""
+        for key in self.handler.config:
+            yield key
+
+    def __len__(self):
+        """Return the number of settings."""
+        return len(self.handler.config)

@@ -27,8 +27,11 @@ class ArgParse(Memory):
                     options['choices'] = item.get('choices')
                 elif not argv_options.get("action", '') == 'count':
                     options['metavar'] = item.get('name')
-                if argv_options:
-                    options.update(argv_options)
+                for key, value in argv_options.items():
+                    if value is False:
+                        options.pop(key)
+                    else:
+                        options[key] = value
                 self.parser.add_argument(*flags_name, **options)
 
         args = self.parser.parse_args(argv)

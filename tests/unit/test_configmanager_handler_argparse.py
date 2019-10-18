@@ -61,6 +61,26 @@ def test_load_empty_config():
     assert config_manager.handler.load() is not None
 
 
+def test_positional_args():
+    with pytest.raises(ValueError):
+        config_manager = config42.ConfigManager(handler=ArgParse, schema=[dict(
+            name="positional",
+            description="positional long description",
+            key="positional",
+            required=False,
+            source=dict(argv=['positional'])
+        )], argv=['positional'])
+
+    config_manager = config42.ConfigManager(handler=ArgParse, schema=[dict(
+        name="positional",
+        description="positional long description",
+        key="positional",
+        required=False,
+        source=dict(argv=['positional'], argv_options=dict(dest=False))
+    )], argv=['positional'])
+    assert config_manager.handler.load() is not None
+
+
 def test_load_configuration():
     argv = "-k value1 --keytwo value2 -o value3 --optional-key2 value1" \
            " --key_source_omitted=value".split(" ")
