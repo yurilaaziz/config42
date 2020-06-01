@@ -4,7 +4,6 @@ class FileHandler(object):
             :param path: path of the config file
         """
 
-        path = path.lower()
         if not extension and len(path.split('.')) > 1:
             extension = path.split('.')[-1]
         else:
