@@ -11,10 +11,10 @@ before_install:
   etcd-cluster-1  -initial-cluster etcd0=http://127.0.0.1:2380  -initial-cluster-state
   new
 python:
-- '3.4'
 - '3.5'
 - '3.6'
-- '3.7-dev'
+- '3.7'
+- '3.8'
 install: pip install tox-travis coverage
 script: tox
 after_success:
