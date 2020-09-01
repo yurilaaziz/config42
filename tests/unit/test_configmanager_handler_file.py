@@ -4,6 +4,10 @@ import pytest
 
 import config42
 from config42.handlers import FileHandler
+from config42.handlers.files.json import JsonHandler
+from config42.handlers.files.yaml import YamlHandler
+from config42.handlers.files.ini import IniHandler
+from config42.handlers.raw import RawHandler
 
 
 def test_default_handler():
@@ -53,8 +57,10 @@ def test_ini_content(tmp_path, sample_config_ini_with_sections):
     file_path = str(tmp_path) + "/test.config.ini"
     config_manager = config42.ConfigManager(handler=FileHandler, path=file_path)
     config_manager.set_many(sample_config_ini_with_sections)
-    assert sample_config_ini_with_sections['section1']['key1'] == config_manager.get('section1.key1')
-    assert sample_config_ini_with_sections['section2']['key2'] == config_manager.get('section2.key2')
+    assert sample_config_ini_with_sections['section1']['key1'] == config_manager.get(
+        'section1.key1')
+    assert sample_config_ini_with_sections['section2']['key2'] == config_manager.get(
+        'section2.key2')
 
 
 def test_json_configuration_content(tmp_path, sample_config):
@@ -69,6 +75,25 @@ def test_yaml_configuration_content(tmp_path, sample_config):
     config_manager = config42.ConfigManager(handler=FileHandler, path=file_path)
     config_manager.set_many(sample_config)
     assert_configuration_content(config_manager, sample_config)
+
+
+def test_handler_with_extension_override(tmp_path, null_config):
+    handlers = [
+        ('yml', YamlHandler),
+        ('yaml', YamlHandler),
+        ('YaMl', YamlHandler),
+        ('ini', IniHandler),
+        ('InI', IniHandler),
+        ('json', JsonHandler),
+        ('txt', RawHandler),
+        ('', RawHandler),
+        ('.', RawHandler),
+        (None, RawHandler)
+    ]
+    for handler in handlers:
+        extension, handler_class = handler
+        conf = config42.ConfigManager(handler=FileHandler, path=str(tmp_path), extension=extension)
+        assert isinstance(conf.handler, handler_class) is True
 
 
 def test_generic_init_with_file_path(tmp_path):

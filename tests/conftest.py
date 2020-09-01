@@ -35,3 +35,8 @@ def sample_config_ini_with_sections():
     return {
         'section1': {'key1': 'value'},
         'section2': {'key2': 'value'}, }
+
+
+@pytest.fixture
+def null_config():
+    return {}

@@ -6,7 +6,7 @@ class FileHandler(object):
 
         if not extension and len(path.split('.')) > 1:
             extension = path.split('.')[-1]
-        else:
+        elif not isinstance(extension, str):
             extension = ""
 
         if extension.lower() in ("yaml", "yml"):
