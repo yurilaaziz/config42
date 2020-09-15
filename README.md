@@ -92,6 +92,9 @@ config = ConfigManager(handler=FileHandler, path='files/config1.yml')
 #INI structure support only one level of nesting (Sections = { key: value }) 
 #config = ConfigManager(handler=FileHandler, path='files/config.ini')
 
+# Non-deterministic files (e.g process substitution results) with enforced filetype 
+#config = ConfigManager(handler=FileHandler, path=path_provided_via_cli, extension=extension_provided_via_cli)
+
 CONFIG = config.as_dict()
 
 print("Configuration has been loaded")
