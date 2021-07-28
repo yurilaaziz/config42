@@ -1,5 +1,5 @@
 class FileHandler(object):
-    def __new__(cls, *, path, extension=None, **kwargs):
+    def __new__(cls, *, path, encoding='utf-8', extension=None, **kwargs):
         """
             :param path: path of the config file
         """
@@ -18,4 +18,4 @@ class FileHandler(object):
         else:
             from config42.handlers.raw import RawHandler as Handler
 
-        return Handler(path=path, **kwargs)
+        return Handler(path=path, encoding=encoding, **kwargs)

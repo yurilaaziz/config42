@@ -22,6 +22,7 @@ def assert_configuration_content(config_manager, config):
     assert config['nested_dict']['nested']['key'] == config_manager.get('nested_dict.nested.key')
     assert config['nested_list'][0][0] == config_manager.get('nested_list.0.0')
     assert config['nested_list'][1][0] == config_manager.get('nested_list.1.0')
+    assert config['utf8_encoding_value'] == config_manager.get('utf8_encoding_value')
     assert config_manager.get('notindict') is None
 
 

@@ -6,7 +6,7 @@ from .base import FileHandlerBase
 class IniHandler(FileHandlerBase):
     def load(self):
         cfg = ConfigParser()
-        file_read = cfg.read(self.path)
+        file_read = cfg.read(self.path, self.encoding)
         if not file_read:
             raise Exception(
                 "An error occurred while trying to read INI file '" +
@@ -22,6 +22,6 @@ class IniHandler(FileHandlerBase):
                     .format(key))
 
         cfg.read_dict(self.config)
-        with open(self.path, "w") as f:
+        with open(self.path, "w", encoding=self.encoding) as f:
             cfg.write(f)
         return True
