@@ -27,7 +27,9 @@ def sample_config():
         'bool': True,
         'simple_dict': {'key': 'value'},
         'nested_dict': {'key': 'value', 'nested': {'key': 'value'}},
-        'nested_list': [[''], ['value']]}
+        'nested_list': [[''], ['value']],
+        'utf8_encoding_value': "测试",
+    }
 
 
 @pytest.fixture

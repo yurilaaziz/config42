@@ -1,7 +1,7 @@
 import json
 from uuid import uuid4
 
-import yaml
+from ruamel.yaml import YAML
 
 from config42 import ConfigManager
 
@@ -26,7 +26,7 @@ def test_literals_yaml_stdout(script_runner):
 
     assert "key: value" in ret.stdout
     assert "nested.key: value" in ret.stdout
-    _ = yaml.load(ret.stdout, Loader=yaml.FullLoader)
+    _ = YAML().load(ret.stdout)
 
 
 def test_literals_json_stdout(script_runner):
@@ -42,7 +42,7 @@ def test_literals_yaml_file(script_runner, tmp_path):
     output_yaml = str(tmp_path / "output.yaml")
     ret = script_runner.run('config42', *args('-l key=value nested.key=value -c ' + output_yaml))
     assert ret.success
-    content = yaml.load(open(output_yaml))
+    content = YAML().load(open(output_yaml))
     assert content.get('key') == 'value'
     assert content.get('nested').get('key') == 'value'
 

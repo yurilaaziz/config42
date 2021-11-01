@@ -4,9 +4,10 @@ from config42.handlers import ConfigHandlerBase
 
 
 class FileHandlerBase(ConfigHandlerBase):
-    def __init__(self, path, **kwargs):
+    def __init__(self, path, encoding='utf-8', **kwargs):
         super().__init__()
         self.path = path
+        self.encoding = encoding
         try:
             config = self.load()
         except Exception:
