@@ -16,7 +16,7 @@ except IOError:
 setup(
     name="config42",
     packages=find_packages(),
-    version="0.4.5",
+    version="0.4.6",
     license="GPLv3+",
     description=
     "Configuration manager for cloud native application, support configuration "

@@ -188,7 +188,7 @@ logging.config.dictConfig(config.get("logging"))
 ### Yaml configuration files
 
 ```bash
-pip install Pyaml
+pip install ruamel.yaml
 ```
 
 ### Etcd data store 

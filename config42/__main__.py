@@ -1,7 +1,7 @@
 import json
 import logging
 
-import yaml
+from ruamel.yaml import YAML
 
 from config42 import ConfigManager
 from config42.handlers.argparse import ArgParse
@@ -96,7 +96,7 @@ def read_from_configuration(configuration):
         import sys
         content = sys.stdin.read()
         if configuration == 'yaml':
-            parsed_config = yaml.load(content, Loader=yaml.FullLoader)
+            parsed_config = YAML().load(content)
         elif configuration == 'json':
             parsed_config = json.loads(content)
     else:
@@ -155,7 +155,7 @@ def main():
             if config.get('output_format') == 'json':
                 print(json.dumps(parsed_config, indent=2))
             else:
-                print(yaml.dump(parsed_config))
+                print(YAML().dump(parsed_config))
         else:
             config_manager = load_configmanager(configuration)
             if action == ACTION_DESTROY:
